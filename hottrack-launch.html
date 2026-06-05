@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HotTrack — Coming Soon</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Barlow+Condensed:wght@300;400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #E8212B;
+  --red2: #ff3d46;
+  --yellow: #FFD700;
+  --black: #060606;
+  --dark: #0d0d0d;
+  --card: #141414;
+  --border: #1e1e1e;
+  --border2: #2a2a2a;
+  --text: #f0ede8;
+  --muted: #888480;
+  --muted2: #3a3836;
+  --white: #ffffff;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.5;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 60px;
+  background: rgba(6,6,6,0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 4px;
+  color: var(--white);
+}
+.logo em { color: var(--red); font-style: normal; }
+
+.nav-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 100px 48px 60px;
+}
+
+/* Background atmosphere */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-bg-glow {
+  position: absolute;
+  width: 800px; height: 800px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.12;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, var(--red) 0%, transparent 70%);
+  animation: breathe 6s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.12; }
+  50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.18; }
+}
+
+.hero-bg-lines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(232,33,43,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232,33,43,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 0%, transparent 100%);
+}
+
+/* Floating car cards decoration */
+.floating-cards {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.fcard {
+  position: absolute;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  width: 160px;
+  opacity: 0;
+  animation: floatIn 1s ease forwards, floatDrift 8s ease-in-out infinite;
+}
+
+.fcard:nth-child(1) { top: 18%; left: 5%; animation-delay: 0.3s, 1.3s; }
+.fcard:nth-child(2) { top: 12%; right: 8%; animation-delay: 0.6s, 1.6s; }
+.fcard:nth-child(3) { bottom: 22%; left: 3%; animation-delay: 0.9s, 1.9s; }
+.fcard:nth-child(4) { bottom: 18%; right: 5%; animation-delay: 1.2s, 2.2s; }
+.fcard:nth-child(5) { top: 50%; left: 1%; animation-delay: 1.5s, 2.5s; }
+.fcard:nth-child(6) { top: 40%; right: 2%; animation-delay: 1.8s, 2.8s; }
+
+@keyframes floatIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 0.6; transform: translateY(0); }
+}
+
+@keyframes floatDrift {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.fcard-series {
+  font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--red); margin-bottom: 4px;
+  font-family: 'Barlow Condensed', sans-serif;
+}
+.fcard-name { font-size: 11px; font-weight: 600; color: var(--white); margin-bottom: 6px; }
+.fcard-detail { font-size: 9px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.fcard-price {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; color: var(--yellow);
+  letter-spacing: 1px; margin-top: 6px;
+}
+
+/* Hero content */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 900px;
+  animation: heroReveal 1s ease both;
+}
+
+@keyframes heroReveal {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 24px;
+  animation: heroReveal 1s 0.1s ease both;
+}
+
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: '';
+  display: block;
+  width: 32px; height: 1px;
+  background: var(--red);
+  opacity: 0.5;
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(72px, 12vw, 160px);
+  line-height: 0.88;
+  letter-spacing: 2px;
+  margin-bottom: 28px;
+  animation: heroReveal 1s 0.2s ease both;
+}
+
+.hero-title .line1 { display: block; color: var(--white); }
+.hero-title .line2 { display: block; color: var(--red); }
+.hero-title .line3 {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(240,237,232,0.45);
+}
+
+.hero-sub {
+  font-size: clamp(15px, 2vw, 18px);
+  color: var(--muted);
+  font-weight: 300;
+  line-height: 1.8;
+  max-width: 560px;
+  margin: 0 auto 40px;
+  animation: heroReveal 1s 0.3s ease both;
+}
+
+.hero-sub strong { color: var(--text); font-weight: 500; }
+
+/* Counter */
+.counter-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 44px;
+  animation: heroReveal 1s 0.4s ease both;
+}
+
+.counter-item { text-align: center; }
+
+.counter-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  letter-spacing: 2px;
+  color: var(--white);
+  line-height: 1;
+  position: relative;
+  display: inline-block;
+}
+
+.counter-num::after {
+  content: '+';
+  font-size: 24px;
+  color: var(--red);
+  position: absolute;
+  top: 4px; right: -18px;
+}
+
+.counter-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.counter-divider {
+  width: 1px; height: 48px;
+  background: var(--border2);
+}
+
+/* Email form */
+.email-form {
+  display: flex;
+  gap: 10px;
+  max-width: 520px;
+  margin: 0 auto 20px;
+  animation: heroReveal 1s 0.5s ease both;
+}
+
+.email-inp {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 14px 18px;
+  color: var(--white);
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.email-inp:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(232,33,43,0.1);
+}
+.email-inp::placeholder { color: var(--muted); }
+
+.btn-join {
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-join:hover {
+  background: var(--red2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(232,33,43,0.3);
+}
+
+.form-note {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  font-family: 'DM Mono', monospace;
+  animation: heroReveal 1s 0.6s ease both;
+  white-space: nowrap;
+  line-height: 1.6;
+}
+
+/* Success state */
+.success-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: heroReveal 0.5s ease both;
+}
+
+.success-state.show { display: flex; }
+
+.success-icon {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(34,197,94,0.12);
+  border: 1px solid rgba(34,197,94,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+
+.success-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px; letter-spacing: 1px;
+  color: var(--white);
+}
+
+.success-sub {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+/* ── SCROLL INDICATOR ── */
+.scroll-hint {
+  position: absolute;
+  bottom: 32px; left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: heroReveal 1s 1s ease both;
+}
+
+.scroll-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--muted);
+}
+
+.scroll-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, var(--muted), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 0.8; transform: scaleY(1.1); }
+}
+
+/* ── WHY SECTION ── */
+.why-section {
+  padding: 100px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--red); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(to right, var(--border2), transparent);
+}
+
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(40px, 6vw, 72px);
+  letter-spacing: 1px; line-height: 1;
+  color: var(--white); margin-bottom: 16px;
+}
+.section-title em { color: var(--red); font-style: normal; }
+
+.section-sub {
+  font-size: 15px; color: var(--muted);
+  font-weight: 300; line-height: 1.8;
+  max-width: 480px; margin-bottom: 60px;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.why-item {
+  background: var(--dark);
+  padding: 36px 32px;
+  transition: background 0.2s;
+}
+.why-item:hover { background: var(--card); }
+
+.why-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px; color: var(--red);
+  letter-spacing: 2px; line-height: 1;
+  margin-bottom: 16px;
+}
+.why-item:hover .why-num { color: var(--red); }
+
+.why-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px; font-weight: 700;
+  letter-spacing: 0.5px; color: var(--white);
+  margin-bottom: 10px;
+}
+
+.why-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+/* ── PROBLEM SECTION ── */
+.problem-section {
+  padding: 100px 48px;
+  background: var(--dark);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.problem-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.problem-visual {
+  position: relative;
+}
+
+/* eBay mock card — showing the pain */
+.ebay-mock {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ebay-mock::before {
+  content: 'THE OLD WAY';
+  position: absolute;
+  top: 12px; right: 12px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 8px; font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--muted2);
+  background: var(--border);
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.ebay-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.ebay-title {
+  font-size: 14px; color: var(--text);
+  line-height: 1.5; margin-bottom: 10px;
+}
+
+.ebay-title em {
+  background: rgba(232,33,43,0.2);
+  border-radius: 2px;
+  padding: 0 2px;
+  font-style: normal;
+  color: #ff7070;
+}
+
+.ebay-results {
+  font-size: 11px; color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 12px;
+}
+
+.ebay-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px; color: var(--muted);
+  line-height: 1.5;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cross {
+  color: rgba(232,33,43,0.6);
+  font-size: 14px;
+  margin-top: 12px;
+  text-align: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+}
+
+/* HotTrack mock card */
+.hottrack-mock {
+  background: var(--card);
+  border: 1px solid rgba(232,33,43,0.3);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 12px;
+  position: relative;
+  box-shadow: 0 0 40px rgba(232,33,43,0.06);
+}
+
+.hottrack-mock::before {
+  content: 'THE HOTTRACK WAY';
+  position: absolute;
+  top: 12px; right: 12px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 8px; font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--red);
+  background: rgba(232,33,43,0.1);
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.ht-filter-row {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+}
+
+.ht-chip {
+  padding: 3px 9px; border-radius: 20px;
+  font-size: 9px; font-weight: 600;
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.5px;
+}
+.ht-chip.red { background: rgba(232,33,43,0.15); color: #ff6b70; border: 1px solid rgba(232,33,43,0.25); }
+.ht-chip.gold { background: rgba(217,119,6,0.15); color: #fbbf24; border: 1px solid rgba(217,119,6,0.25); }
+.ht-chip.muted { background: var(--border); color: var(--muted); border: 1px solid var(--border2); }
+
+.ht-result {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ht-result-name { font-size: 12px; font-weight: 600; color: var(--white); }
+.ht-result-detail { font-size: 9px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
+.ht-result-price {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; color: var(--yellow); letter-spacing: 1px;
+}
+
+.check {
+  color: rgba(34,197,94,0.8);
+  margin-top: 12px;
+  text-align: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+}
+
+/* Problem text */
+.problem-text {}
+.problem-quote {
+  font-family: 'Barlow', sans-serif;
+  font-size: clamp(20px, 3vw, 28px);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 32px;
+  border-left: 3px solid var(--red);
+  padding-left: 24px;
+}
+
+.problem-point {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+
+.pp-ico {
+  width: 32px; height: 32px; flex-shrink: 0;
+  border-radius: 7px;
+  background: rgba(232,33,43,0.08);
+  border: 1px solid rgba(232,33,43,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+
+.pp-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.pp-text strong { color: var(--text); }
+
+/* ── FOUNDING SECTION ── */
+.founding-section {
+  padding: 100px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.founding-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.founding-card {
+  background: var(--dark);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 28px 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.founding-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--red), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.founding-card:hover { border-color: #3a3a3a; }
+.founding-card:hover::before { opacity: 1; }
+
+.founding-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--yellow);
+  background: rgba(255,215,0,0.08);
+  border: 1px solid rgba(255,215,0,0.15);
+  padding: 3px 9px; border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.founding-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px; font-weight: 700;
+  color: var(--white); margin-bottom: 10px;
+}
+
+.founding-desc { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
+
+.founding-detail {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--red);
+  letter-spacing: 0.5px;
+}
+
+/* ── ROADMAP ── */
+.roadmap-section {
+  padding: 100px 48px;
+  background: var(--dark);
+  border-top: 1px solid var(--border);
+}
+
+.roadmap-inner { max-width: 800px; margin: 0 auto; }
+
+.roadmap-item {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 0;
+  position: relative;
+}
+
+.roadmap-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 15px; top: 32px;
+  width: 1px; height: calc(100% + 0px);
+  background: var(--border2);
+}
+
+.roadmap-dot {
+  width: 32px; height: 32px; flex-shrink: 0;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  position: relative; z-index: 1;
+  margin-top: 2px;
+}
+
+.roadmap-dot.done { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); }
+.roadmap-dot.active { background: rgba(232,33,43,0.15); border: 1px solid rgba(232,33,43,0.3); animation: roadmapPulse 2s infinite; }
+.roadmap-dot.future { background: var(--card); border: 1px solid var(--border2); }
+
+@keyframes roadmapPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232,33,43,0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(232,33,43,0); }
+}
+
+.roadmap-content { padding-bottom: 40px; }
+
+.roadmap-phase {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 4px;
+}
+
+.roadmap-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--white); margin-bottom: 8px;
+}
+
+.roadmap-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+/* ── BOTTOM CTA ── */
+.cta-section {
+  padding: 120px 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(232,33,43,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 8vw, 100px);
+  letter-spacing: 2px; line-height: 0.95;
+  color: var(--white); margin-bottom: 24px;
+  position: relative; z-index: 1;
+}
+.cta-title em { color: var(--red); font-style: normal; }
+
+.cta-sub {
+  font-size: 16px; color: var(--muted);
+  max-width: 480px; margin: 0 auto 48px;
+  line-height: 1.7;
+  position: relative; z-index: 1;
+}
+
+.cta-form {
+  display: flex;
+  gap: 10px;
+  max-width: 480px;
+  margin: 0 auto 16px;
+  position: relative; z-index: 1;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; letter-spacing: 3px; color: var(--muted);
+}
+.footer-logo em { color: var(--red); font-style: normal; }
+
+.footer-links {
+  display: flex; gap: 24px;
+  list-style: none;
+}
+
+.footer-links a {
+  font-size: 11px; color: var(--muted);
+  text-decoration: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600; letter-spacing: 0.8px;
+  text-transform: uppercase;
+  transition: color 0.15s; cursor: pointer;
+}
+.footer-links a:hover { color: var(--text); }
+
+.footer-copy {
+  font-size: 10px; color: var(--muted2);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: #0a1a0a;
+  border: 1px solid rgba(34,197,94,0.3);
+  color: #4ade80;
+  padding: 12px 22px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  display: flex; align-items: center; gap: 8px;
+  z-index: 9999; opacity: 0;
+  transition: all 0.25s; white-space: nowrap;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 0 20px; }
+  .hero { padding: 100px 24px 80px; }
+  .hero-title { font-size: clamp(56px, 15vw, 96px); }
+  .floating-cards { display: none; }
+  .why-grid { grid-template-columns: 1fr; }
+  .problem-inner { grid-template-columns: 1fr; gap: 48px; }
+  .founding-grid { grid-template-columns: 1fr; }
+  .email-form, .cta-form { flex-direction: column; }
+  .counter-wrap { gap: 20px; }
+  .why-section, .problem-section, .founding-section, .roadmap-section, .cta-section { padding: 60px 24px; }
+  footer { flex-direction: column; gap: 16px; text-align: center; }
+  .footer-links { justify-content: center; }
+}
+
+/* Animate on scroll (simple version) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Hot<em>Track</em></div>
+  <div class="nav-tag">
+    <div class="nav-dot"></div>
+    Coming Soon
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-bg-glow"></div>
+    <div class="hero-bg-lines"></div>
+  </div>
+
+  <!-- Floating decoration cards -->
+  <div class="floating-cards">
+    <div class="fcard">
+      <div class="fcard-series">Super TH · 2021</div>
+      <div class="fcard-name">BMW M3 E30</div>
+      <div class="fcard-detail">Blue · Spectraflame</div>
+      <div class="fcard-price">€65</div>
+    </div>
+    <div class="fcard">
+      <div class="fcard-series">Car Culture · Deutschland</div>
+      <div class="fcard-name">Mercedes 300 SEL</div>
+      <div class="fcard-detail">Dark Red · Sealed</div>
+      <div class="fcard-price">€25</div>
+    </div>
+    <div class="fcard">
+      <div class="fcard-series">RLC · 1969 Original</div>
+      <div class="fcard-name">Custom Camaro</div>
+      <div class="fcard-detail">Spectraflame Green</div>
+      <div class="fcard-price">€280</div>
+    </div>
+    <div class="fcard">
+      <div class="fcard-series">Car Culture · Spettacolare</div>
+      <div class="fcard-name">Lamborghini Countach</div>
+      <div class="fcard-detail">White · Real Riders</div>
+      <div class="fcard-price">€20</div>
+    </div>
+    <div class="fcard">
+      <div class="fcard-series">Treasure Hunt · 2023</div>
+      <div class="fcard-name">Porsche 911 GT3</div>
+      <div class="fcard-detail">Silver · Mint</div>
+      <div class="fcard-price">€35</div>
+    </div>
+    <div class="fcard">
+      <div class="fcard-series">Japan Historics · 2021</div>
+      <div class="fcard-name">Nissan Skyline R30</div>
+      <div class="fcard-detail">Orange · Real Riders</div>
+      <div class="fcard-price">€22</div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="hero-content">
+    <div class="hero-eyebrow">The Collector's Marketplace</div>
+
+    <h1 class="hero-title">
+      <span class="line1">Trade</span>
+      <span class="line2">Hot Wheels</span>
+      <span class="line3">Like a Pro</span>
+    </h1>
+
+    <p class="hero-sub">
+      The first dedicated platform for Hot Wheels collectors.
+      <strong>Search by model, series, tier, year, color — or go straight to the collector number on the back of the card.</strong>
+      No more digging through eBay. No more mismatched listings.
+      Just collectors, trading with collectors.
+    </p>
+
+    <!-- Counter -->
+    <div class="counter-wrap">
+      <div class="counter-item">
+        <div class="counter-num" id="cnt-collectors">0</div>
+        <div class="counter-label">Collectors Signed Up</div>
+      </div>
+      <div class="counter-divider"></div>
+      <div class="counter-item">
+        <div class="counter-num" id="cnt-listings">0</div>
+        <div class="counter-label">Cars Being Listed</div>
+      </div>
+      <div class="counter-divider"></div>
+      <div class="counter-item">
+        <div class="counter-num" id="cnt-days">0</div>
+        <div class="counter-label">Days to Launch</div>
+      </div>
+    </div>
+
+    <!-- Email form -->
+    <div id="form-wrap">
+      <div class="email-form">
+        <input class="email-inp" type="email" placeholder="your@email.com" id="email-inp">
+        <button class="btn-join" onclick="joinWaitlist()">Join the Waitlist</button>
+      </div>
+      <div class="form-note">🔒 No spam. Ever. Just a launch notification and early access.</div>
+    </div>
+
+    <!-- Success state (hidden until signup) -->
+    <div class="success-state" id="success-state">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">You're on the list!</div>
+      <div class="success-sub">We'll notify you the moment HotTrack goes live. As an early member you get <strong style="color:var(--yellow)">Founding Collector</strong> status — zero fees for your first 3 months.</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-text">Scroll</div>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ── WHY SECTION ── -->
+<section class="why-section">
+  <div class="section-label">Why HotTrack</div>
+  <h2 class="section-title">Built by <em>Collectors</em><br>for Collectors</h2>
+  <p class="section-sub">Every filter, every field, every feature designed around how collectors actually think and search.</p>
+
+  <div class="why-grid reveal">
+    <div class="why-item">
+      <div class="why-num">01</div>
+      <div class="why-title">Search That Actually Works</div>
+      <div class="why-desc">Filter by tier, series, sub-series, brand, model, real car year, color and condition. Or type the collector number straight from the back of the card (e.g. GRJ73) and find it in one second.</div>
+    </div>
+    <div class="why-item">
+      <div class="why-num">02</div>
+      <div class="why-title">Free to Sell, Always</div>
+      <div class="why-desc">List as many cars as you want for free. You set the price, you receive 100% of it. Buyers pay a small protection fee on top — you never lose a cent.</div>
+    </div>
+    <div class="why-item">
+      <div class="why-num">03</div>
+      <div class="why-title">Offers & Bidding</div>
+      <div class="why-desc">Buyers can make offers. Sellers can accept, decline or counter. Trade the way collectors actually trade — with negotiation built in from the start.</div>
+    </div>
+    <div class="why-item">
+      <div class="why-num">04</div>
+      <div class="why-title">Custom Builds Gallery</div>
+      <div class="why-desc">A dedicated section for customised Hot Wheels — completely separate from regular listings. Customisers get their own portfolio page.</div>
+    </div>
+    <div class="why-item">
+      <div class="why-num">05</div>
+      <div class="why-title">Search by Collector Number</div>
+      <div class="why-desc">Every listing supports the official collector number found on the back of the card (e.g. GRJ73 or JBY87-JA10). Know your number? Type it in and go straight to the exact card — no browsing needed.</div>
+    </div>
+    <div class="why-item">
+      <div class="why-num">06</div>
+      <div class="why-title">Trusted Community</div>
+      <div class="why-desc">Seller ratings, verified profiles, secure payments and buyer protection on every transaction. Trade with confidence, every time.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROBLEM SECTION ── -->
+<section class="problem-section">
+  <div class="problem-inner">
+
+    <div class="problem-text reveal">
+      <div class="section-label">The Problem</div>
+      <h2 class="section-title" style="font-size:clamp(36px,5vw,56px)">eBay, Vinted & Co.<br>Weren't Built <em>For Us</em></h2>
+      <p class="problem-quote">"I spent 45 minutes searching for a specific Car Culture release and couldn't find it because nobody listed it properly."</p>
+
+      <div class="problem-point">
+        <div class="pp-ico">🔍</div>
+        <div class="pp-text"><strong>No collector-specific filters.</strong> eBay has no concept of tiers, series, sub-series or collector numbers. You can't search by the code on the back of your card. You're searching in the dark.</div>
+      </div>
+      <div class="problem-point">
+        <div class="pp-ico">📝</div>
+        <div class="pp-text"><strong>Inconsistent listings.</strong> One seller writes "Super Treasure Hunt", another writes "STH", another writes "rare". It's chaos.</div>
+      </div>
+      <div class="problem-point">
+        <div class="pp-ico">💸</div>
+        <div class="pp-text"><strong>Fees eat your profit.</strong> eBay charges sellers up to 15% plus PayPal fees. On a €10 car that's €1.50 gone before shipping.</div>
+      </div>
+      <div class="problem-point">
+        <div class="pp-ico">🤝</div>
+        <div class="pp-text"><strong>No community.</strong> eBay is a transaction machine. There's no place for collectors to connect, ask questions or share their finds.</div>
+      </div>
+    </div>
+
+    <div class="problem-visual reveal">
+      <!-- eBay mock -->
+      <div class="ebay-mock">
+        <div class="ebay-tag">eBay search: "hot wheels bmw m3"</div>
+        <div class="ebay-title">Results: <em>4,832 items</em> — sorted by "Best Match"</div>
+        <div class="ebay-results">Showing results 1–48 of 4,832</div>
+        <div class="ebay-item">
+          <span>Hot Wheels BMW M3 - various years mixed lot x10</span>
+          <span style="color:var(--muted)">€18</span>
+        </div>
+        <div class="ebay-item">
+          <span>BMW M3 GTR Hot Wheels 2003 movie car loose played</span>
+          <span style="color:var(--muted)">€4</span>
+        </div>
+        <div class="ebay-item">
+          <span>Hot Wheels BMW M3 E46 - not sure which series</span>
+          <span style="color:var(--muted)">€7</span>
+        </div>
+        <div class="ebay-item">
+          <span>Lot 50 Hot Wheels mixed cars BMW included maybe</span>
+          <span style="color:var(--muted)">€22</span>
+        </div>
+        <div class="cross">❌ Wrong tier. Wrong year. Wrong everything.</div>
+      </div>
+
+      <!-- HotTrack mock -->
+      <div class="hottrack-mock">
+        <div class="ht-filter-row">
+          <div class="ht-chip red">BMW</div>
+          <div class="ht-chip red">M3 E30</div>
+          <div class="ht-chip gold">Super TH</div>
+          <div class="ht-chip muted">Sealed</div>
+          <div class="ht-chip muted">2021</div>
+          <div class="ht-chip muted">GRJ73</div>
+        </div>
+        <div class="ht-result">
+          <div>
+            <div class="ht-result-name">BMW M3 E30 Sport</div>
+            <div class="ht-result-detail">Super TH · 2021 · Blue Metallic · GRJ73</div>
+          </div>
+          <div class="ht-result-price">€65</div>
+        </div>
+        <div class="ht-result">
+          <div>
+            <div class="ht-result-name">BMW M3 E30 Sport</div>
+            <div class="ht-result-detail">Super TH · 2020 · Red · HBY44</div>
+          </div>
+          <div class="ht-result-price">€48</div>
+        </div>
+        <div class="ht-result" style="border:none">
+          <div>
+            <div class="ht-result-name">BMW M3 E30 Sport</div>
+            <div class="ht-result-detail">Car Culture · 2019 · White · Sealed</div>
+          </div>
+          <div class="ht-result-price">€22</div>
+        </div>
+        <div class="check">✓ Searched by collector number GRJ73. Instant, exact results.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── FOUNDING COLLECTOR ── -->
+<section class="founding-section">
+  <div class="section-label">Early Access</div>
+  <h2 class="section-title">Be a <em>Founding</em> Collector</h2>
+  <p class="section-sub">The first collectors on HotTrack get benefits that never expire. Join the waitlist today.</p>
+
+  <div class="founding-grid reveal">
+    <div class="founding-card">
+      <div class="founding-badge">⭐ Founding Perk</div>
+      <div class="founding-title">Zero Fees for 3 Months</div>
+      <div class="founding-desc">Founding Collectors pay no buyer protection fee for their first 3 months on the platform. Trade freely while you get to know the community.</div>
+      <div class="founding-detail">→ Available to first 500 members only</div>
+    </div>
+    <div class="founding-card">
+      <div class="founding-badge">🏅 Founding Perk</div>
+      <div class="founding-title">Founding Collector Badge</div>
+      <div class="founding-desc">A permanent badge on your profile marking you as one of the original HotTrack community members. Visible on every listing you make, forever.</div>
+      <div class="founding-detail">→ Never available after launch</div>
+    </div>
+    <div class="founding-card">
+      <div class="founding-badge">🚀 Founding Perk</div>
+      <div class="founding-title">Free Featured Listing</div>
+      <div class="founding-desc">One free 7-day promoted listing when you join — your first car appears at the top of browse results the moment the platform launches.</div>
+      <div class="founding-detail">→ Worth €4.00, yours free</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ROADMAP ── -->
+<section class="roadmap-section">
+  <div class="roadmap-inner">
+    <div class="section-label reveal">The Plan</div>
+    <h2 class="section-title reveal">How We <em>Get There</em></h2>
+    <p class="section-sub reveal" style="margin-bottom:48px">Transparent about where we are and where we're going.</p>
+
+    <div class="roadmap-item reveal">
+      <div class="roadmap-dot done">✓</div>
+      <div class="roadmap-content">
+        <div class="roadmap-phase">Phase 1 — Complete</div>
+        <div class="roadmap-title">Platform Design & Blueprint</div>
+        <div class="roadmap-desc">Full data structure, filter system, fee model, listing form and buyer experience designed and prototyped. The bones are solid.</div>
+      </div>
+    </div>
+
+    <div class="roadmap-item reveal">
+      <div class="roadmap-dot active">🔥</div>
+      <div class="roadmap-content">
+        <div class="roadmap-phase">Phase 2 — Now</div>
+        <div class="roadmap-title">Building the Waitlist</div>
+        <div class="roadmap-desc">Reaching out to the Hot Wheels community. Building the seller base before opening to buyers. You're here at exactly the right moment.</div>
+      </div>
+    </div>
+
+    <div class="roadmap-item reveal">
+      <div class="roadmap-dot future">○</div>
+      <div class="roadmap-content">
+        <div class="roadmap-phase">Phase 3 — Coming</div>
+        <div class="roadmap-title">Seller Early Access</div>
+        <div class="roadmap-desc">Waitlist members get early access to list their collections. We build up inventory before opening the doors to buyers.</div>
+      </div>
+    </div>
+
+    <div class="roadmap-item reveal">
+      <div class="roadmap-dot future">○</div>
+      <div class="roadmap-content">
+        <div class="roadmap-phase">Phase 4 — Launch</div>
+        <div class="roadmap-title">HotTrack Goes Live</div>
+        <div class="roadmap-desc">When we have enough listings to give buyers a real experience, we open to everyone. Every waitlist member gets notified simultaneously.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── BOTTOM CTA ── -->
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <h2 class="cta-title reveal">Your <em>Collection</em><br>Deserves Better</h2>
+  <p class="cta-sub reveal">Join the waitlist. Be part of something collectors have needed for decades.</p>
+
+  <div class="cta-form reveal" id="cta-form">
+    <input class="email-inp" type="email" placeholder="your@email.com" id="cta-email-inp">
+    <button class="btn-join" onclick="joinWaitlistCTA()">Claim Your Spot →</button>
+  </div>
+  <div class="form-note reveal" id="cta-note">🔒 No spam. Just a launch notification when we go live.</div>
+
+  <div class="success-state" id="cta-success" style="margin-top:24px">
+    <div class="success-icon">🏁</div>
+    <div class="success-title">You're in. See you at launch.</div>
+    <div class="success-sub">We'll be in touch. In the meantime — keep hunting. 🔥</div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">Hot<em>Track</em></div>
+  <ul class="footer-links">
+    <li><a onclick="showToast('Coming soon!')">About</a></li>
+    <li><a onclick="showToast('Coming soon!')">How It Works</a></li>
+    <li><a onclick="showToast('Coming soon!')">Fees</a></li>
+    <li><a onclick="showToast('Coming soon!')">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 HotTrack · All rights reserved</div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toast-msg"></span></div>
+
+<script>
+// ── ANIMATED COUNTERS ──
+function animateCounter(id, target, duration) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = 0;
+  const startTime = performance.now();
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target);
+    if (progress < 1) requestAnimationFrame(update);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(update);
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    animateCounter('cnt-collectors', 847, 2000);
+    animateCounter('cnt-listings', 312, 2000);
+    animateCounter('cnt-days', 47, 1500);
+  }, 800);
+});
+
+// ── WAITLIST JOIN ──
+let signedUp = false;
+
+function joinWaitlist() {
+  const inp = document.getElementById('email-inp');
+  if (!inp.value || !inp.value.includes('@')) {
+    inp.style.borderColor = 'var(--red)';
+    inp.placeholder = 'Please enter a valid email!';
+    setTimeout(() => {
+      inp.style.borderColor = '';
+      inp.placeholder = 'your@email.com';
+    }, 2000);
+    return;
+  }
+  document.getElementById('form-wrap').style.display = 'none';
+  document.getElementById('success-state').classList.add('show');
+  animateCounter('cnt-collectors', 848, 800);
+  showToast('🎉 Welcome to HotTrack! Check your inbox.');
+  signedUp = true;
+}
+
+function joinWaitlistCTA() {
+  const inp = document.getElementById('cta-email-inp');
+  if (!inp.value || !inp.value.includes('@')) {
+    inp.style.borderColor = 'var(--red)';
+    setTimeout(() => inp.style.borderColor = '', 2000);
+    return;
+  }
+  document.getElementById('cta-form').style.display = 'none';
+  document.getElementById('cta-note').style.display = 'none';
+  document.getElementById('cta-success').classList.add('show');
+  if (!signedUp) animateCounter('cnt-collectors', 848, 800);
+  showToast('🏁 You\'re on the list! See you at launch.');
+}
+
+// ── SCROLL REVEAL ──
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+reveals.forEach(el => observer.observe(el));
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>
