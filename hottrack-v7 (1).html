@@ -1,0 +1,2236 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HotTrack — The Hot Wheels Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   THEME SYSTEM — Light default, dark toggle
+═══════════════════════════════════════ */
+[data-theme="light"] {
+  --bg: #f5f4f2;
+  --bg2: #ffffff;
+  --bg3: #efefed;
+  --card: #ffffff;
+  --card2: #f9f8f6;
+  --border: #e2e0db;
+  --border2: #d0cec8;
+  --text: #1a1917;
+  --text2: #3d3b38;
+  --muted: #888580;
+  --muted2: #b8b5af;
+  --nav-bg: rgba(245,244,242,0.96);
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+  --input-bg: #ffffff;
+  --sidebar-bg: #faf9f7;
+}
+
+[data-theme="dark"] {
+  --bg: #080808;
+  --bg2: #0e0e0e;
+  --bg3: #141414;
+  --card: #141414;
+  --card2: #1a1a1a;
+  --border: #222222;
+  --border2: #2e2e2e;
+  --text: #ececec;
+  --text2: #b0aea8;
+  --muted: #666;
+  --muted2: #3a3a3a;
+  --nav-bg: rgba(8,8,8,0.97);
+  --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+  --input-bg: #0e0e0e;
+  --sidebar-bg: #0e0e0e;
+}
+
+:root {
+  --red: #E8212B;
+  --red2: #ff3d46;
+  --red-pale: rgba(232,33,43,0.08);
+  --red-border: rgba(232,33,43,0.2);
+  --yellow: #FFD700;
+  --yellow-pale: rgba(255,215,0,0.08);
+  --yellow-border: rgba(255,215,0,0.2);
+  --green: #16a34a;
+  --green-pale: rgba(22,163,74,0.08);
+  --purple: #7c3aed;
+  --purple-pale: rgba(124,58,237,0.08);
+  --blue: #2563eb;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ═══════════════════════════════════════
+   NAV
+═══════════════════════════════════════ */
+nav {
+  position: fixed;
+  top:0; left:0; right:0;
+  z-index: 1000;
+  height: 58px;
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 20px;
+}
+
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 3px;
+  color: var(--text);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+.logo em { color: var(--red); font-style: normal; }
+
+.nav-pills { display:flex; gap:2px; flex:1; }
+
+.npill {
+  padding: 5px 13px;
+  border-radius: 6px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--muted);
+  border: 1px solid transparent;
+  background: none;
+}
+.npill:hover { color: var(--text); background: var(--bg3); }
+.npill.active { color: var(--red); background: var(--red-pale); border-color: var(--red-border); }
+.npill.active-custom { color: var(--purple); background: var(--purple-pale); border-color: rgba(124,58,237,0.2); }
+
+.nav-r { display:flex; gap:8px; align-items:center; margin-left:auto; }
+
+/* Dark mode toggle */
+.theme-toggle {
+  width: 36px; height: 20px;
+  border-radius: 10px;
+  background: var(--border2);
+  position: relative;
+  cursor: pointer;
+  border: none;
+  transition: background 0.25s;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .theme-toggle { background: var(--red); }
+.theme-toggle::after {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: white;
+  top: 3px; left: 3px;
+  transition: transform 0.25s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+[data-theme="dark"] .theme-toggle::after { transform: translateX(16px); }
+.theme-label {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.5px;
+}
+
+.btn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+.btn-ghost {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--border); }
+.btn-red { background: var(--red); color: white; }
+.btn-red:hover { background: var(--red2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(232,33,43,0.25); }
+.btn-yellow { background: var(--yellow); color: #1a1917; }
+.btn-yellow:hover { filter: brightness(0.95); transform: translateY(-1px); }
+.btn-green { background: var(--green); color: white; }
+.btn-green:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-outline {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+}
+.btn-outline:hover { border-color: var(--border); background: var(--bg3); }
+.btn-lg { padding: 12px 24px; font-size: 14px; border-radius: 8px; width: 100%; text-align: center; }
+
+/* ═══════════════════════════════════════
+   SCREENS
+═══════════════════════════════════════ */
+.screen { display:none; padding-top:58px; min-height:100vh; }
+.screen.active { display:block; }
+
+/* ═══════════════════════════════════════
+   BROWSE — LAYOUT
+═══════════════════════════════════════ */
+.browse-layout { display:flex; min-height:calc(100vh - 58px); }
+
+/* SIDEBAR */
+.sidebar {
+  width: 248px;
+  flex-shrink: 0;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 58px;
+  height: calc(100vh - 58px);
+  overflow-y: auto;
+}
+
+.sb-sec { border-bottom: 1px solid var(--border); padding: 14px; }
+
+.sb-head {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sb-clear {
+  font-size: 9px;
+  color: var(--red);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.sb-helper {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 8px;
+  font-family: 'DM Mono', monospace;
+  padding: 6px 8px;
+  background: var(--bg3);
+  border-radius: 5px;
+  border-left: 2px solid var(--border2);
+}
+
+.chip-grp { display:flex; flex-wrap:wrap; gap:4px; }
+
+.chip {
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: none;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+  font-family: 'Barlow', sans-serif;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.chip:hover { border-color: var(--border); color: var(--text); }
+.chip.on { background: var(--red); border-color: var(--red); color: white; }
+
+.sb-inp {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 6px 9px;
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  font-size: 11px;
+  outline: none;
+  margin-bottom: 6px;
+  transition: border-color 0.15s;
+}
+.sb-inp:focus { border-color: var(--red); }
+.sb-inp::placeholder { color: var(--muted2); }
+
+.brand-list { max-height: 160px; overflow-y:auto; }
+.brand-item {
+  display:flex; align-items:center; gap:7px;
+  padding: 4px 3px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--muted);
+  transition: all 0.1s;
+}
+.brand-item:hover { background: var(--bg3); color: var(--text); }
+.brand-item.sel { color: var(--text); }
+.bchk {
+  width: 13px; height: 13px;
+  border-radius: 3px;
+  border: 1px solid var(--border2);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7px;
+  transition: all 0.1s;
+}
+.brand-item.sel .bchk { background: var(--red); border-color: var(--red); color: white; }
+
+.price-row-sb { display:flex; gap:6px; align-items:center; }
+.price-inp-sb {
+  width: 68px;
+  background: var(--input-bg);
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  padding: 5px 7px;
+  color: var(--text);
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  outline: none;
+  text-align: center;
+}
+.price-inp-sb:focus { border-color: var(--red); }
+.price-sep-sb { color: var(--muted2); font-size: 10px; }
+
+/* MAIN */
+.browse-main { flex:1; min-width:0; background: var(--bg); }
+
+.b-tabs {
+  display:flex; gap:8px;
+  padding: 14px 20px 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+
+.btab {
+  padding: 8px 16px;
+  border-radius: 7px 7px 0 0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--muted);
+  border: 1px solid transparent;
+  border-bottom: none;
+  margin-bottom: -1px;
+  background: none;
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 7px;
+}
+.btab.active { color: var(--text); background: var(--bg); border-color: var(--border); }
+.btab.active.cars { border-top: 2px solid var(--red); }
+.btab.active.customs { border-top: 2px solid var(--purple); }
+
+.tbadge {
+  font-size: 9px; padding: 1px 6px; border-radius: 8px; font-weight: 700;
+}
+.cars .tbadge { background: var(--red-pale); color: var(--red); }
+.customs .tbadge { background: var(--purple-pale); color: var(--purple); }
+
+.toolbar {
+  display:flex; align-items:center; gap:10px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+
+.search-box {
+  flex:1;
+  display:flex; align-items:center; gap:8px;
+  background: var(--input-bg);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 0 13px;
+  height: 38px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-box:focus-within { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-pale); }
+.search-box input {
+  flex:1; background:none; border:none; outline:none;
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+}
+.search-box input::placeholder { color: var(--muted2); }
+.sico { color: var(--muted2); font-size: 14px; }
+
+.sort-sel {
+  background: var(--input-bg);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 6px 24px 6px 9px;
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  font-size: 11px;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath fill='%23999' d='M0 0l4 5 4-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+option { background: var(--input-bg); }
+
+.res-count { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; white-space:nowrap; }
+
+.active-tags {
+  display:flex; flex-wrap:wrap; gap:5px;
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  min-height: 0;
+}
+
+.atag {
+  display:flex; align-items:center; gap:4px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  background: var(--red-pale);
+  border: 1px solid var(--red-border);
+  color: var(--red);
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.atag:hover { background: rgba(232,33,43,0.14); }
+
+.clr-all {
+  font-size:10px; color:var(--muted); cursor:pointer;
+  padding:2px 8px; border-radius:20px;
+  background:none; border:none;
+  font-family:'Barlow',sans-serif;
+  transition: color 0.1s;
+}
+.clr-all:hover { color:var(--red); }
+
+/* GRID */
+.grid-wrap { padding: 18px 20px; }
+
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px;
+}
+
+/* CARD */
+.lcard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.4s ease both;
+}
+.lcard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border2);
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.lcard:nth-child(1){animation-delay:.03s}.lcard:nth-child(2){animation-delay:.06s}
+.lcard:nth-child(3){animation-delay:.09s}.lcard:nth-child(4){animation-delay:.12s}
+.lcard:nth-child(5){animation-delay:.15s}.lcard:nth-child(6){animation-delay:.18s}
+.lcard:nth-child(7){animation-delay:.21s}.lcard:nth-child(8){animation-delay:.24s}
+.lcard:nth-child(9){animation-delay:.27s}.lcard:nth-child(10){animation-delay:.30s}
+.lcard:nth-child(11){animation-delay:.33s}.lcard:nth-child(12){animation-delay:.36s}
+
+.lcard-img {
+  width:100%; height:130px;
+  background: linear-gradient(135deg, var(--bg3), var(--card2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:50px;
+  position:relative; overflow:hidden;
+}
+
+.tier-badge {
+  position:absolute; top:8px; left:8px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8px; font-weight:700;
+  letter-spacing:0.8px; text-transform:uppercase;
+  padding:2px 7px; border-radius:3px;
+}
+.tb-main { background:rgba(37,99,235,0.85); color:white; }
+.tb-silver { background:rgba(100,116,139,0.85); color:white; }
+.tb-prem { background:linear-gradient(135deg,#92400e,#d97706); color:white; }
+.tb-th { background:rgba(220,38,38,0.85); color:white; }
+.tb-sth { background:linear-gradient(135deg,#5b21b6,#7c3aed); color:white; }
+.tb-rlc { background:linear-gradient(135deg,#7f1d1d,#dc2626); color:white; }
+.tb-custom { background:linear-gradient(135deg,#5b21b6,#7c3aed); color:white; }
+
+.wish-btn {
+  position:absolute; top:8px; right:8px;
+  width:28px; height:28px; border-radius:6px;
+  background:rgba(255,255,255,0.8);
+  border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; cursor:pointer;
+  transition:all 0.15s; color:var(--muted);
+  z-index:2;
+}
+[data-theme="dark"] .wish-btn { background:rgba(0,0,0,0.5); }
+.wish-btn:hover { background:var(--red-pale); color:var(--red); border-color:var(--red-border); }
+.wish-btn.on { background:var(--red); color:white; border-color:var(--red); }
+
+.promo-badge {
+  position:absolute; bottom:8px; right:8px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase;
+  padding:2px 7px; border-radius:3px;
+  background:var(--yellow); color:#1a1917;
+}
+
+.lcard-body { padding: 10px 13px 13px; }
+
+.lcard-series {
+  font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  color:var(--red); margin-bottom:3px;
+  font-family:'Barlow Condensed',sans-serif;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+.lcard-name {
+  font-size:13px; font-weight:600; color:var(--text);
+  margin-bottom:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+.lcard-detail {
+  font-size:10px; color:var(--muted);
+  font-family:'DM Mono',monospace;
+  margin-bottom:9px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+.lcard-footer { display:flex; align-items:center; justify-content:space-between; }
+
+.lcard-price {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:20px; letter-spacing:1px;
+  color: var(--red);
+}
+
+.lcard-cond {
+  font-size:8px; font-weight:700;
+  padding:2px 7px; border-radius:3px;
+  letter-spacing:0.5px; text-transform:uppercase;
+  font-family:'Barlow Condensed',sans-serif;
+}
+.c-sealed { background:rgba(22,163,74,0.1); color:#15803d; }
+.c-mint { background:rgba(22,163,74,0.07); color:#16a34a; }
+.c-good { background:rgba(37,99,235,0.1); color:#1d4ed8; }
+.c-played { background:rgba(234,88,12,0.1); color:#c2410c; }
+
+/* ═══════════════════════════════════════
+   DETAIL SCREEN
+═══════════════════════════════════════ */
+.detail-wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+  animation: fadeUp 0.4s ease both;
+}
+
+.back-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  color:var(--muted); font-size:12px; cursor:pointer;
+  margin-bottom:24px; transition:color 0.15s;
+  background:none; border:none;
+  font-family:'Barlow',sans-serif; font-weight:500;
+}
+.back-btn:hover { color:var(--text); }
+
+.detail-grid {
+  display:grid; grid-template-columns:1fr 360px;
+  gap:36px; align-items:start;
+}
+
+.detail-img-main {
+  width:100%; aspect-ratio:4/3;
+  background:linear-gradient(135deg,var(--bg3),var(--card2));
+  border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:90px;
+  border:1px solid var(--border);
+  margin-bottom:10px;
+}
+
+.dthumbs { display:flex; gap:7px; }
+.dthumb {
+  width:62px; height:62px;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; cursor:pointer;
+  transition:border-color 0.15s;
+}
+.dthumb.active { border-color:var(--red); }
+.dthumb:hover:not(.active) { border-color:var(--border2); }
+
+.detail-info { position:sticky; top:76px; }
+
+.d-tier {
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  color:#d97706; margin-bottom:5px;
+}
+
+.d-series {
+  font-size:10px; color:var(--red);
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  margin-bottom:8px;
+}
+
+.d-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:38px; letter-spacing:1px; line-height:1;
+  color:var(--text); margin-bottom:10px;
+}
+
+.d-tags { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:16px; }
+.dtag {
+  font-size:10px; padding:3px 9px; border-radius:5px;
+  background:var(--bg3); border:1px solid var(--border);
+  color:var(--muted); font-family:'DM Mono',monospace;
+}
+
+.d-price {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:46px; color:var(--red);
+  letter-spacing:2px; line-height:1; margin-bottom:4px;
+}
+
+.fee-line {
+  font-size:11px; color:var(--muted);
+  font-family:'DM Mono',monospace; margin-bottom:18px;
+}
+.fee-line strong { color:var(--text); }
+
+.offer-ok {
+  display:flex; align-items:center; gap:5px;
+  font-size:11px; color:var(--green); margin-bottom:12px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:600; letter-spacing:0.5px;
+}
+
+.d-btns { display:flex; flex-direction:column; gap:8px; margin-bottom:18px; }
+
+.offer-box {
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:10px; padding:14px; margin-bottom:14px; display:none;
+}
+.offer-box.show { display:block; }
+.ob-title {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  color:var(--muted); margin-bottom:9px;
+}
+.ob-row { display:flex; gap:8px; align-items:center; }
+.ob-inp {
+  flex:1; background:var(--input-bg);
+  border:1px solid var(--border2); border-radius:6px;
+  padding:9px 12px; color:var(--text);
+  font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px;
+  outline:none;
+}
+.ob-inp:focus { border-color:var(--yellow); }
+
+.seller-card {
+  background:var(--card2); border:1px solid var(--border);
+  border-radius:10px; padding:13px;
+  display:flex; align-items:center; gap:10px; margin-bottom:14px;
+}
+.seller-av {
+  width:38px; height:38px; border-radius:50%;
+  background:linear-gradient(135deg,var(--red),#ff6b70);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:14px; color:white; flex-shrink:0;
+}
+.seller-name { font-size:13px; font-weight:600; color:var(--text); }
+.seller-stars { color:var(--yellow); font-size:11px; }
+.seller-meta { font-size:10px; color:var(--muted); font-family:'DM Mono',monospace; }
+
+.d-tabs { display:flex; border-bottom:1px solid var(--border); margin-bottom:14px; }
+.dtab-btn {
+  padding:8px 14px; font-size:12px; font-weight:500;
+  color:var(--muted); cursor:pointer;
+  border-bottom:2px solid transparent; margin-bottom:-1px;
+  transition:all 0.15s;
+  font-family:'Barlow Condensed',sans-serif; letter-spacing:0.5px;
+  background:none; border-top:none; border-left:none; border-right:none;
+}
+.dtab-btn.active { color:var(--text); border-bottom-color:var(--red); }
+
+.d-desc { font-size:13px; color:var(--muted); line-height:1.8; }
+
+.spec-table { width:100%; border-collapse:collapse; }
+.spec-table tr { border-bottom:1px solid var(--border); }
+.spec-table td { padding:8px 0; font-size:12px; }
+.spec-table td:first-child { color:var(--muted); width:45%; }
+.spec-table td:last-child { color:var(--text); font-family:'DM Mono',monospace; font-size:11px; }
+
+/* ═══════════════════════════════════════
+   SELL SCREEN
+═══════════════════════════════════════ */
+.sell-wrap {
+  max-width: 680px; margin:0 auto;
+  padding: 40px 24px 80px;
+  animation: fadeUp 0.4s ease both;
+}
+
+.sell-eyebrow {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase;
+  color:var(--red); margin-bottom:8px;
+  display:flex; align-items:center; gap:8px;
+}
+.sell-eyebrow::before {
+  content:''; display:inline-block;
+  width:16px; height:2px; background:var(--red);
+}
+
+.sell-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(40px,6vw,64px);
+  letter-spacing:2px; line-height:0.95;
+  color:var(--text); margin-bottom:8px;
+}
+.sell-title em { color:var(--red); font-style:normal; }
+.sell-sub { font-size:13px; color:var(--muted); margin-bottom:32px; line-height:1.6; }
+
+/* Form sections */
+.fsec {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:13px; overflow:hidden; margin-bottom:10px;
+  box-shadow:var(--shadow);
+}
+
+.fsec-head {
+  padding:14px 18px; display:flex; align-items:center; gap:12px;
+  border-bottom:1px solid var(--border); background:var(--card2);
+}
+.fsec-ico {
+  width:32px; height:32px; border-radius:7px;
+  background:var(--red-pale); border:1px solid var(--red-border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; flex-shrink:0;
+}
+.fsec-title {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:14px; font-weight:700; letter-spacing:0.8px;
+  text-transform:uppercase; color:var(--text);
+}
+.fsec-sub { font-size:11px; color:var(--muted); margin-top:1px; }
+.fsec-body { padding:18px; }
+
+/* Fields */
+.field { margin-bottom:16px; }
+.field:last-child { margin-bottom:0; }
+
+.fl {
+  display:flex; align-items:center; gap:6px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px; font-weight:700; letter-spacing:1.2px;
+  text-transform:uppercase; color:var(--muted); margin-bottom:6px;
+}
+.req { color:var(--red); font-size:13px; }
+.opt {
+  font-size:8px; padding:1px 5px;
+  background:var(--bg3); border-radius:3px;
+  color:var(--muted2); letter-spacing:0.8px;
+}
+
+.fh {
+  font-size:10px; color:var(--muted2);
+  margin-top:5px; font-family:'DM Mono',monospace; line-height:1.4;
+}
+
+.fi, .fsel, .fta {
+  width:100%; background:var(--input-bg);
+  border:1px solid var(--border2); border-radius:7px;
+  padding:10px 13px; color:var(--text);
+  font-family:'Barlow',sans-serif; font-size:13px;
+  outline:none; appearance:none;
+  transition:border-color 0.15s, box-shadow 0.15s;
+}
+.fi:focus, .fsel:focus, .fta:focus {
+  border-color:var(--red);
+  box-shadow:0 0 0 3px var(--red-pale);
+}
+.fi::placeholder { color:var(--muted2); }
+.fta { resize:vertical; min-height:80px; line-height:1.6; }
+.fsel {
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath fill='%23999' d='M0 0l4 5 4-5z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  padding-right:30px; cursor:pointer;
+}
+
+.frow { display:grid; gap:12px; }
+.frow2 { grid-template-columns:1fr 1fr; }
+.frow3 { grid-template-columns:1fr 1fr 1fr; }
+
+/* Type toggle */
+.type-toggle { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:16px; }
+.topt {
+  border:1px solid var(--border2); border-radius:9px;
+  padding:13px 8px; cursor:pointer;
+  transition:all 0.15s; background:var(--input-bg); text-align:center;
+}
+.topt:hover { border-color:var(--border); }
+.topt.sel { border-color:var(--red); background:var(--red-pale); box-shadow:0 0 0 3px var(--red-pale); }
+.topt-ico { font-size:22px; margin-bottom:5px; }
+.topt-lbl { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:700; color:var(--text); margin-bottom:2px; }
+.topt-desc { font-size:9px; color:var(--muted); line-height:1.3; }
+
+/* Tier grid */
+.tier-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; }
+.tier-opt {
+  border:1px solid var(--border2); border-radius:8px;
+  padding:11px 7px; cursor:pointer;
+  transition:all 0.15s; background:var(--input-bg); text-align:center;
+}
+.tier-opt:hover { border-color:var(--border); }
+.tier-opt.sel { border-color:#d97706; background:rgba(217,119,6,0.07); }
+.t-ico { font-size:16px; margin-bottom:4px; }
+.t-name { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; color:var(--text); margin-bottom:2px; }
+.t-desc { font-size:9px; color:var(--muted); }
+
+/* Condition */
+.cond-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; }
+.cond-opt {
+  border:1px solid var(--border2); border-radius:8px;
+  padding:11px 6px; cursor:pointer;
+  transition:all 0.15s; background:var(--input-bg); text-align:center;
+}
+.cond-opt:hover { border-color:var(--border); }
+.cond-opt.sel { border-color:var(--green); background:var(--green-pale); }
+.co-ico { font-size:16px; margin-bottom:4px; }
+.co-name { font-size:10px; font-weight:600; color:var(--text); font-family:'Barlow Condensed',sans-serif; letter-spacing:0.3px; }
+
+/* Toggle */
+.toggle-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:11px 13px; background:var(--input-bg);
+  border:1px solid var(--border2); border-radius:8px;
+  cursor:pointer; transition:border-color 0.15s;
+}
+.toggle-row:hover { border-color:var(--border); }
+.ti { flex:1; }
+.tl { font-size:13px; font-weight:500; color:var(--text); }
+.td-sub { font-size:10px; color:var(--muted); margin-top:1px; }
+.tog {
+  width:38px; height:21px; border-radius:11px;
+  background:var(--border2); position:relative;
+  transition:background 0.2s; flex-shrink:0; margin-left:12px;
+}
+.tog.on { background:var(--red); }
+.tog::after {
+  content:''; position:absolute;
+  width:15px; height:15px; border-radius:50%; background:white;
+  top:3px; left:3px; transition:transform 0.2s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.tog.on::after { transform:translateX(17px); }
+
+/* Photo */
+.photo-zone {
+  border:2px dashed var(--border2); border-radius:11px;
+  padding:28px; text-align:center; cursor:pointer;
+  transition:all 0.15s; background:var(--input-bg);
+}
+.photo-zone:hover { border-color:var(--red); background:var(--red-pale); }
+.pz-ico { font-size:28px; margin-bottom:8px; opacity:0.4; }
+.pz-title { font-size:13px; font-weight:500; color:var(--text); margin-bottom:3px; }
+.pz-hint { font-size:10px; color:var(--muted2); font-family:'DM Mono',monospace; }
+
+/* Price preview */
+.price-prev {
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:9px; overflow:hidden; margin-top:12px;
+}
+.pp-head {
+  padding:9px 13px;
+  background:var(--yellow-pale); border-bottom:1px solid var(--yellow-border);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--muted);
+}
+.pp-rows { padding:12px 13px; }
+.pp-row {
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:11px; color:var(--muted); margin-bottom:7px;
+}
+.pp-row:last-child { margin-bottom:0; }
+.pp-row.total {
+  color:var(--text); font-weight:600; font-size:13px;
+  border-top:1px solid var(--border);
+  margin-top:7px; padding-top:9px;
+}
+.pp-amt { font-family:'DM Mono',monospace; font-size:11px; color:var(--text2); }
+.pp-amt.big { font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--red); letter-spacing:1px; }
+
+/* Promo */
+.promo-box {
+  background:var(--yellow-pale); border:1px solid var(--yellow-border);
+  border-radius:10px; padding:14px;
+}
+.promo-head {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  color:#92400e; margin-bottom:4px; display:flex; align-items:center; gap:6px;
+}
+[data-theme="dark"] .promo-head { color:var(--yellow); }
+.promo-desc { font-size:11px; color:var(--muted); line-height:1.5; margin-bottom:10px; }
+.promo-opts { display:flex; gap:7px; }
+.promo-opt {
+  flex:1; border:1px solid var(--border2); border-radius:8px;
+  padding:10px 8px; cursor:pointer;
+  transition:all 0.15s; background:var(--input-bg); text-align:center;
+}
+.promo-opt:hover { border-color:rgba(217,119,6,0.4); }
+.promo-opt.sel { border-color:#d97706; background:rgba(217,119,6,0.08); }
+.promo-days { font-family:'Bebas Neue',sans-serif; font-size:18px; color:#d97706; letter-spacing:1px; }
+[data-theme="dark"] .promo-days { color:var(--yellow); }
+.promo-price { font-size:10px; color:var(--muted); font-family:'DM Mono',monospace; margin-top:2px; }
+.promo-none { font-size:11px; color:var(--muted); cursor:pointer; text-decoration:underline; margin-top:8px; display:inline-block; }
+
+/* Submit */
+.submit-area {
+  margin-top:22px; background:var(--card); border:1px solid var(--border);
+  border-radius:13px; padding:20px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  box-shadow:var(--shadow);
+}
+.submit-note { font-size:12px; color:var(--muted); line-height:1.5; max-width:380px; }
+.submit-note strong { color:var(--text); }
+.btn-submit {
+  background:var(--red); color:white; border:none;
+  padding:12px 28px; border-radius:8px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:15px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  cursor:pointer; transition:all 0.15s; white-space:nowrap; flex-shrink:0;
+}
+.btn-submit:hover { background:var(--red2); transform:translateY(-2px); box-shadow:0 8px 24px rgba(232,33,43,0.25); }
+
+/* Fees screen */
+.fees-wrap {
+  max-width:600px; margin:0 auto; padding:40px 24px;
+  animation:fadeUp 0.4s ease both;
+}
+
+.fee-table-wrap {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; overflow:hidden; box-shadow:var(--shadow);
+}
+.fee-table-head {
+  padding:11px 16px; background:var(--yellow-pale);
+  border-bottom:1px solid var(--yellow-border);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--muted);
+}
+.fee-table { width:100%; border-collapse:collapse; }
+.fee-table tr { border-bottom:1px solid var(--border); }
+.fee-table tr:last-child { border-bottom:none; }
+.fee-table td { padding:8px 16px; font-size:11px; font-family:'DM Mono',monospace; }
+.fee-table td:first-child { color:var(--muted); }
+.fee-table td:last-child { color:var(--red); text-align:right; font-weight:600; }
+.fee-table tr.hi td { background:var(--red-pale); }
+.fee-table tr.hi td:first-child { color:var(--text2); }
+
+.calc-box {
+  margin-top:18px; background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:18px; box-shadow:var(--shadow);
+}
+.calc-result {
+  font-size:13px; color:var(--muted);
+  font-family:'DM Mono',monospace; line-height:2;
+  margin-top:10px;
+}
+.calc-result span { color:var(--text); }
+.calc-result .big { color:var(--red); font-size:15px; font-weight:600; }
+
+/* Hidden */
+.hidden { display:none !important; }
+
+/* Toast */
+.toast {
+  position:fixed; bottom:28px; left:50%;
+  transform:translateX(-50%) translateY(16px);
+  background:var(--card); border:1px solid var(--green);
+  color:var(--green); padding:11px 20px; border-radius:8px;
+  font-size:13px; font-weight:500;
+  display:flex; align-items:center; gap:8px;
+  z-index:9999; opacity:0; transition:all 0.25s;
+  white-space:nowrap; box-shadow:var(--shadow-lg);
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* Pending review notice */
+.pending-notice {
+  background:rgba(37,99,235,0.07); border:1px solid rgba(37,99,235,0.2);
+  border-radius:8px; padding:10px 13px; margin-top:8px;
+  font-size:11px; color:#1d4ed8; font-family:'DM Mono',monospace;
+  line-height:1.5; display:none;
+}
+[data-theme="dark"] .pending-notice { color:#93c5fd; background:rgba(37,99,235,0.08); border-color:rgba(37,99,235,0.15); }
+.pending-notice.show { display:block; }
+
+@media (max-width:700px) {
+  .detail-grid { grid-template-columns:1fr; }
+  .detail-info { position:static; }
+  .sidebar { display:none; }
+  .frow2, .frow3 { grid-template-columns:1fr; }
+  .type-toggle { grid-template-columns:1fr; }
+  .tier-grid { grid-template-columns:repeat(2,1fr); }
+  .cond-grid { grid-template-columns:repeat(2,1fr); }
+  .submit-area { flex-direction:column; }
+  .promo-opts { flex-direction:column; }
+  nav { padding:0 14px; gap:10px; }
+  .theme-label { display:none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="showScreen('browse')">Hot<em>Track</em></div>
+  <div class="nav-pills">
+    <button class="npill active" id="np-browse" onclick="showScreen('browse')">🏎️ Browse</button>
+    <button class="npill" id="np-custom" onclick="showCustoms()">🎨 Custom Builds</button>
+    <button class="npill" id="np-fees" onclick="showScreen('fees')">💰 Fees</button>
+  </div>
+  <div class="nav-r">
+    <span class="theme-label" id="theme-label">☀️ Light</span>
+    <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Toggle dark/light mode"></button>
+    <button class="btn btn-ghost">Sign In</button>
+    <button class="btn btn-red" onclick="showScreen('sell')">+ List a Car</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     BROWSE SCREEN
+═══════════════════════════════════════ -->
+<div id="screen-browse" class="screen active">
+  <div class="browse-layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <div class="sb-sec">
+        <div class="sb-head">Tier <button class="sb-clear" onclick="clearGroup('tier')">CLEAR</button></div>
+        <div class="sb-helper">Blue card = Mainline. Silver logo = Silver Series. Black card with Real Riders = Premium. Flame logo = Treasure Hunt.</div>
+        <div class="chip-grp" id="grp-tier">
+          <div class="chip" onclick="toggleChip(this,'tier')">Mainline</div>
+          <div class="chip" onclick="toggleChip(this,'tier')">Silver Series</div>
+          <div class="chip" onclick="toggleChip(this,'tier')">Premium</div>
+          <div class="chip" onclick="toggleChip(this,'tier')">Treasure Hunt</div>
+          <div class="chip" onclick="toggleChip(this,'tier')">Super TH</div>
+          <div class="chip" onclick="toggleChip(this,'tier')">RLC</div>
+        </div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-head">Series <button class="sb-clear" onclick="clearGroup('series')">CLEAR</button></div>
+        <div class="sb-helper">The series name on the card. On Premium cards found in the top right corner.</div>
+        <div class="chip-grp" id="grp-series">
+          <div class="chip" onclick="toggleChip(this,'series')">Car Culture</div>
+          <div class="chip" onclick="toggleChip(this,'series')">Fast & Furious</div>
+          <div class="chip" onclick="toggleChip(this,'series')">Boulevard</div>
+          <div class="chip" onclick="toggleChip(this,'series')">Factory Fresh</div>
+          <div class="chip" onclick="toggleChip(this,'series')">HW Speed Graphics</div>
+          <div class="chip" onclick="toggleChip(this,'series')">HW J-Imports</div>
+          <div class="chip" onclick="toggleChip(this,'series')">Hot Wagons</div>
+          <div class="chip" onclick="toggleChip(this,'series')">National Icons</div>
+          <div class="chip" onclick="toggleChip(this,'series')">Pop Culture</div>
+          <div class="chip" onclick="toggleChip(this,'series')">Team Transport</div>
+        </div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-head">Sub-series <button class="sb-clear" onclick="clearGroup('sub')">CLEAR</button></div>
+        <div class="sb-helper">Specific theme within the series, printed prominently on front of card e.g. Deutschland Design.</div>
+        <div class="chip-grp" id="grp-sub">
+          <div class="chip" onclick="toggleChip(this,'sub')">Deutschland Design</div>
+          <div class="chip" onclick="toggleChip(this,'sub')">Japan Historics</div>
+          <div class="chip" onclick="toggleChip(this,'sub')">Race Day</div>
+          <div class="chip" onclick="toggleChip(this,'sub')">Spettacolare</div>
+          <div class="chip" onclick="toggleChip(this,'sub')">HW Decades of Fast</div>
+          <div class="chip" onclick="toggleChip(this,'sub')">Slide Street</div>
+          <div class="chip" onclick="toggleChip(this,'sub')">Exotic Envy</div>
+          <div class="chip" onclick="toggleChip(this,'sub')">iWC Racing</div>
+          <div class="chip" onclick="toggleChip(this,'sub')">Circuit Legends</div>
+          <div class="chip" onclick="toggleChip(this,'sub')">Modern Classics</div>
+        </div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-head">Brand <button class="sb-clear" onclick="clearBrands()">CLEAR</button></div>
+        <div class="sb-helper">The real car manufacturer e.g. BMW, Porsche, Lamborghini.</div>
+        <input class="sb-inp" type="text" placeholder="Search brands…" oninput="filterBrands(this.value)">
+        <div class="brand-list" id="brand-list"></div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-head">Model <button class="sb-clear" onclick="clearModelFilter()">CLEAR</button></div>
+        <div class="sb-helper">Search by specific model e.g. 959, M3 E30, Countach, Supra.</div>
+        <input class="sb-inp" type="text" id="model-filter" placeholder="e.g. 959, M3 E30…" oninput="updateActiveTags()">
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-head">Real Car Era <button class="sb-clear" onclick="clearGroup('era')">CLEAR</button></div>
+        <div class="sb-helper">The decade the real car was manufactured — not the year the Hot Wheels was made.</div>
+        <div class="chip-grp" id="grp-era">
+          <div class="chip" onclick="toggleChip(this,'era')">Fantasy</div>
+          <div class="chip" onclick="toggleChip(this,'era')">Classic (pre-80s)</div>
+          <div class="chip" onclick="toggleChip(this,'era')">80s</div>
+          <div class="chip" onclick="toggleChip(this,'era')">90s</div>
+          <div class="chip" onclick="toggleChip(this,'era')">2000s</div>
+          <div class="chip" onclick="toggleChip(this,'era')">Modern</div>
+        </div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-head">Release Year <button class="sb-clear" onclick="clearGroup('year')">CLEAR</button></div>
+        <div class="sb-helper">The year this Hot Wheels was released — use © year from back if not shown.</div>
+        <div class="chip-grp" id="grp-year">
+          <div class="chip" onclick="toggleChip(this,'year')">2025</div>
+          <div class="chip" onclick="toggleChip(this,'year')">2024</div>
+          <div class="chip" onclick="toggleChip(this,'year')">2023</div>
+          <div class="chip" onclick="toggleChip(this,'year')">2022</div>
+          <div class="chip" onclick="toggleChip(this,'year')">2021</div>
+          <div class="chip" onclick="toggleChip(this,'year')">2020</div>
+          <div class="chip" onclick="toggleChip(this,'year')">Pre-2020</div>
+        </div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-head">Condition <button class="sb-clear" onclick="clearGroup('cond')">CLEAR</button></div>
+        <div class="sb-helper">Sealed = never opened. Played = visible wear or marks.</div>
+        <div class="chip-grp" id="grp-cond">
+          <div class="chip" onclick="toggleChip(this,'cond')">Sealed</div>
+          <div class="chip" onclick="toggleChip(this,'cond')">Mint Opened</div>
+          <div class="chip" onclick="toggleChip(this,'cond')">Good</div>
+          <div class="chip" onclick="toggleChip(this,'cond')">Played</div>
+        </div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-head">Price (€)</div>
+        <div class="price-row-sb">
+          <input class="price-inp-sb" type="number" placeholder="Min">
+          <span class="price-sep-sb">—</span>
+          <input class="price-inp-sb" type="number" placeholder="Max">
+        </div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-head">Decals</div>
+        <div class="sb-helper">Whether the car has stripes, numbers or livery printed on it.</div>
+        <div class="chip-grp">
+          <div class="chip" onclick="toggleChip(this,'decal')">With Decals</div>
+          <div class="chip" onclick="toggleChip(this,'decal')">Plain</div>
+        </div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-head">Listing Type</div>
+        <div class="chip-grp">
+          <div class="chip" onclick="toggleChip(this,'ltype')">Fixed Price</div>
+          <div class="chip" onclick="toggleChip(this,'ltype')">Accepts Offers</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MAIN -->
+    <div class="browse-main">
+
+      <div class="b-tabs">
+        <button class="btab cars active" id="bt-cars" onclick="switchBrowse('cars')">
+          🏎️ Regular Cars <span class="tbadge">4,280</span>
+        </button>
+        <button class="btab customs" id="bt-customs" onclick="switchBrowse('customs')">
+          🎨 Custom Builds <span class="tbadge" style="background:var(--purple-pale);color:var(--purple)">312</span>
+        </button>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <span class="sico">🔍</span>
+          <input type="text" placeholder="Search by model, brand, collector number, sub-series…">
+        </div>
+        <select class="sort-sel">
+          <option>Newest first</option>
+          <option>Price: Low → High</option>
+          <option>Price: High → Low</option>
+          <option>Most Popular</option>
+        </select>
+        <div class="res-count">4,280 listings</div>
+      </div>
+
+      <div class="active-tags" id="active-tags"></div>
+
+      <div class="grid-wrap">
+        <div class="listings-grid">
+
+          <div class="lcard">
+            <div class="lcard-img">🏎️
+              <span class="tier-badge tb-prem">Gold Premium</span>
+              <div class="promo-badge">⭐ Featured</div>
+              <div class="wish-btn" onclick="toggleWish(this);event.stopPropagation()">♡</div>
+            </div>
+            <div class="lcard-body">
+              <div class="lcard-series">Car Culture · Deutschland Design</div>
+              <div class="lcard-name">Mercedes-Benz 300 SEL 6.8 AMG</div>
+              <div class="lcard-detail">2020 · GRJ73 · Dark Red · Decals</div>
+              <div class="lcard-footer">
+                <div class="lcard-price">€25</div>
+                <span class="lcard-cond c-sealed">Sealed</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lcard" onclick="showDetail()">
+            <div class="lcard-img">🚗
+              <span class="tier-badge tb-sth">Super TH</span>
+              <div class="wish-btn" onclick="toggleWish(this);event.stopPropagation()">♡</div>
+            </div>
+            <div class="lcard-body">
+              <div class="lcard-series">Super Treasure Hunt · 2021</div>
+              <div class="lcard-name">BMW M3 E30 Sport</div>
+              <div class="lcard-detail">2021 · Blue Metallic · Spectraflame</div>
+              <div class="lcard-footer">
+                <div class="lcard-price">€65</div>
+                <span class="lcard-cond c-sealed">Sealed</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lcard">
+            <div class="lcard-img">🏁
+              <span class="tier-badge tb-main">Mainline</span>
+              <div class="wish-btn" onclick="toggleWish(this);event.stopPropagation()">♡</div>
+            </div>
+            <div class="lcard-body">
+              <div class="lcard-series">Factory Fresh · 2021</div>
+              <div class="lcard-name">Mercedes-Benz 500E</div>
+              <div class="lcard-detail">2021 · GRX59 · Silver · No Decals</div>
+              <div class="lcard-footer">
+                <div class="lcard-price">€4</div>
+                <span class="lcard-cond c-mint">Mint</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lcard">
+            <div class="lcard-img">🚙
+              <span class="tier-badge tb-main">Mainline</span>
+              <div class="wish-btn" onclick="toggleWish(this);event.stopPropagation()">♡</div>
+            </div>
+            <div class="lcard-body">
+              <div class="lcard-series">Fast & Furious · HW Decades of Fast</div>
+              <div class="lcard-name">Volkswagen Jetta MK3</div>
+              <div class="lcard-detail">2022 · HRW44 · White · Decals</div>
+              <div class="lcard-footer">
+                <div class="lcard-price">€6</div>
+                <span class="lcard-cond c-good">Good</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lcard">
+            <div class="lcard-img">🏎️
+              <span class="tier-badge tb-prem">Gold Premium</span>
+              <div class="promo-badge">⭐ Featured</div>
+              <div class="wish-btn" onclick="toggleWish(this);event.stopPropagation()">♡</div>
+            </div>
+            <div class="lcard-body">
+              <div class="lcard-series">Car Culture · Spettacolare</div>
+              <div class="lcard-name">Lamborghini Countach LP5000</div>
+              <div class="lcard-detail">2023 · White · Real Riders · Decals</div>
+              <div class="lcard-footer">
+                <div class="lcard-price">€20</div>
+                <span class="lcard-cond c-sealed">Sealed</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lcard">
+            <div class="lcard-img">🚗
+              <span class="tier-badge tb-silver">Silver Series</span>
+              <div class="wish-btn" onclick="toggleWish(this);event.stopPropagation()">♡</div>
+            </div>
+            <div class="lcard-body">
+              <div class="lcard-series">Hot Wagons · 2024</div>
+              <div class="lcard-name">Volvo 850 Estate</div>
+              <div class="lcard-detail">2024 · Blue · No Decals</div>
+              <div class="lcard-footer">
+                <div class="lcard-price">€12</div>
+                <span class="lcard-cond c-sealed">Sealed</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lcard">
+            <div class="lcard-img">🏁
+              <span class="tier-badge tb-th">Treasure Hunt</span>
+              <div class="wish-btn" onclick="toggleWish(this);event.stopPropagation()">♡</div>
+            </div>
+            <div class="lcard-body">
+              <div class="lcard-series">Treasure Hunt · 2023</div>
+              <div class="lcard-name">Porsche 911 GT3</div>
+              <div class="lcard-detail">2023 · Silver · Decals</div>
+              <div class="lcard-footer">
+                <div class="lcard-price">€35</div>
+                <span class="lcard-cond c-mint">Mint</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lcard">
+            <div class="lcard-img">🚙
+              <span class="tier-badge tb-rlc">RLC</span>
+              <div class="wish-btn" onclick="toggleWish(this);event.stopPropagation()">♡</div>
+            </div>
+            <div class="lcard-body">
+              <div class="lcard-series">Red Line Club · 1969 Original</div>
+              <div class="lcard-name">Custom Camaro</div>
+              <div class="lcard-detail">1969 · Spectraflame Green · USA</div>
+              <div class="lcard-footer">
+                <div class="lcard-price">€280</div>
+                <span class="lcard-cond c-good">Good</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lcard">
+            <div class="lcard-img">🏎️
+              <span class="tier-badge tb-prem">Gold Premium</span>
+              <div class="wish-btn" onclick="toggleWish(this);event.stopPropagation()">♡</div>
+            </div>
+            <div class="lcard-body">
+              <div class="lcard-series">Car Culture · Japan Historics</div>
+              <div class="lcard-name">Nissan Skyline R30</div>
+              <div class="lcard-detail">2021 · Orange · Real Riders</div>
+              <div class="lcard-footer">
+                <div class="lcard-price">€22</div>
+                <span class="lcard-cond c-mint">Mint</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lcard">
+            <div class="lcard-img">🚗
+              <span class="tier-badge tb-main">Mainline</span>
+              <div class="wish-btn" onclick="toggleWish(this);event.stopPropagation()">♡</div>
+            </div>
+            <div class="lcard-body">
+              <div class="lcard-series">HW J-Imports · 2025</div>
+              <div class="lcard-name">Mazda RX-7</div>
+              <div class="lcard-detail">2025 · White · No Decals</div>
+              <div class="lcard-footer">
+                <div class="lcard-price">€3</div>
+                <span class="lcard-cond c-played">Played</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lcard">
+            <div class="lcard-img">🚙
+              <span class="tier-badge tb-silver">Silver Series</span>
+              <div class="wish-btn" onclick="toggleWish(this);event.stopPropagation()">♡</div>
+            </div>
+            <div class="lcard-body">
+              <div class="lcard-series">National Icons · 2024</div>
+              <div class="lcard-name">Toyota Land Cruiser FJ40</div>
+              <div class="lcard-detail">2024 · White · Decals</div>
+              <div class="lcard-footer">
+                <div class="lcard-price">€9</div>
+                <span class="lcard-cond c-sealed">Sealed</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lcard">
+            <div class="lcard-img">🏎️
+              <span class="tier-badge tb-rlc">RLC</span>
+              <div class="wish-btn" onclick="toggleWish(this);event.stopPropagation()">♡</div>
+            </div>
+            <div class="lcard-body">
+              <div class="lcard-series">Red Line Club · 2022</div>
+              <div class="lcard-name">Ford GT40 MkII</div>
+              <div class="lcard-detail">2022 · Gulf Blue · Real Riders</div>
+              <div class="lcard-footer">
+                <div class="lcard-price">€55</div>
+                <span class="lcard-cond c-sealed">Sealed</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DETAIL SCREEN
+═══════════════════════════════════════ -->
+<div id="screen-detail" class="screen">
+  <div class="detail-wrap">
+    <button class="back-btn" onclick="showScreen('browse')">← Back to listings</button>
+    <div class="detail-grid">
+      <div>
+        <div class="detail-img-main">🚗</div>
+        <div class="dthumbs">
+          <div class="dthumb active">🚗</div>
+          <div class="dthumb">📦</div>
+          <div class="dthumb">🔍</div>
+          <div class="dthumb">📸</div>
+        </div>
+      </div>
+      <div class="detail-info">
+        <div class="d-tier">⭐ Super Treasure Hunt</div>
+        <div class="d-series">2021 · Wave A</div>
+        <div class="d-title">BMW M3 E30 Sport</div>
+        <div class="d-tags">
+          <span class="dtag">Blue Metallic</span>
+          <span class="dtag">Spectraflame</span>
+          <span class="dtag">Real Riders</span>
+          <span class="dtag">Sealed</span>
+          <span class="dtag">Decals</span>
+          <span class="dtag">80s era (1986)</span>
+        </div>
+        <div class="d-price">€65</div>
+        <div class="fee-line">+ <strong>€6.00</strong> buyer protection fee · You pay <strong>€71.00</strong> total</div>
+        <div class="offer-ok">✓ Seller accepts offers</div>
+        <div class="d-btns">
+          <button class="btn btn-red btn-lg" onclick="showToast('🎉 Purchase started! Seller notified.')">Buy Now — €71.00</button>
+          <button class="btn btn-yellow btn-lg" onclick="toggleOfferBox()">Make an Offer</button>
+          <button class="btn btn-outline btn-lg" onclick="showToast('💬 Question sent to seller!')">Ask a Question</button>
+        </div>
+        <div class="offer-box" id="offer-box">
+          <div class="ob-title">Your Offer (€)</div>
+          <div class="ob-row">
+            <input class="ob-inp" type="number" placeholder="55">
+            <button class="btn btn-yellow" onclick="showToast('💬 Offer sent! Seller will respond within 24h.')">Send</button>
+          </div>
+        </div>
+        <div class="seller-card">
+          <div class="seller-av">MK</div>
+          <div>
+            <div class="seller-name">Marco_Kollector</div>
+            <div class="seller-stars">★★★★★</div>
+            <div class="seller-meta">4.9 · 312 sales · Since 2021</div>
+          </div>
+        </div>
+        <div class="d-tabs">
+          <button class="dtab-btn active" onclick="switchDtab(this,'desc')">Description</button>
+          <button class="dtab-btn" onclick="switchDtab(this,'specs')">Specs</button>
+        </div>
+        <div id="dtab-desc" class="d-desc">
+          Original Super Treasure Hunt from the 2021 mainline. Still sealed in original blister pack — never opened. Spectraflame blue paint with Real Riders rubber tires. Purchased directly from a certified dealer. Card is in perfect condition, no creases or shelf wear.
+        </div>
+        <div id="dtab-specs" class="hidden">
+          <table class="spec-table">
+            <tr><td>Tier</td><td>Super Treasure Hunt</td></tr>
+            <tr><td>Release Year</td><td>2021</td></tr>
+            <tr><td>Wave</td><td>A</td></tr>
+            <tr><td>Collector #</td><td>HBY87-JA10</td></tr>
+            <tr><td>Base Color</td><td>Blue Metallic (Spectraflame)</td></tr>
+            <tr><td>Decals</td><td>Yes</td></tr>
+            <tr><td>Real Car Year</td><td>1986</td></tr>
+            <tr><td>Real Car Era</td><td>80s</td></tr>
+            <tr><td>Condition</td><td>Sealed</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SELL SCREEN
+═══════════════════════════════════════ -->
+<div id="screen-sell" class="screen">
+  <div class="sell-wrap">
+    <button class="back-btn" onclick="showScreen('browse')">← Back to listings</button>
+    <div class="sell-eyebrow">New Listing</div>
+    <div class="sell-title">List Your <em>Car</em></div>
+    <div class="sell-sub">Fill in the details below. The more accurate, the faster it sells. You receive 100% of your listed price.</div>
+
+    <!-- SECTION 1: Car Identity -->
+    <div class="fsec">
+      <div class="fsec-head">
+        <div class="fsec-ico">🚗</div>
+        <div>
+          <div class="fsec-title">Car Identity</div>
+          <div class="fsec-sub">What kind of car is this?</div>
+        </div>
+      </div>
+      <div class="fsec-body">
+
+        <div class="field">
+          <div class="fl">Car Type <span class="req">*</span></div>
+          <div class="type-toggle">
+            <div class="topt sel" id="t-real" onclick="selectType('real')">
+              <div class="topt-ico">🏎️</div>
+              <div class="topt-lbl">Real Car</div>
+              <div class="topt-desc">Based on a real vehicle</div>
+            </div>
+            <div class="topt" id="t-fantasy" onclick="selectType('fantasy')">
+              <div class="topt-ico">🔥</div>
+              <div class="topt-lbl">Fantasy</div>
+              <div class="topt-desc">Hot Wheels original design</div>
+            </div>
+            <div class="topt" id="t-custom" onclick="selectType('custom')">
+              <div class="topt-ico">🎨</div>
+              <div class="topt-lbl">Custom</div>
+              <div class="topt-desc">Modified by a customiser</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real car fields -->
+        <div id="real-fields">
+          <div class="frow frow2">
+            <div class="field">
+              <div class="fl">Brand <span class="req">*</span></div>
+              <select class="fsel" id="brand-sel" onchange="checkOtherBrand()">
+                <option value="">Select brand…</option>
+                <option>Acura</option><option>Alfa Romeo</option><option>Alpine</option>
+                <option>Aston Martin</option><option>Audi</option><option>Austin</option>
+                <option>Bentley</option><option>BMW</option><option>Bugatti</option>
+                <option>Buick</option><option>BYD</option><option>Cadillac</option>
+                <option>Chevrolet</option><option>Chrysler</option><option>Citroën</option>
+                <option>Cupra</option><option>Dacia</option><option>Datsun</option>
+                <option>De Tomaso</option><option>Dodge</option><option>Ferrari</option>
+                <option>Fiat</option><option>Ford</option><option>Genesis</option>
+                <option>Honda</option><option>Hummer</option><option>Hyundai</option>
+                <option>Infiniti</option><option>Isuzu</option><option>Jaguar</option>
+                <option>Jeep</option><option>Kia</option><option>Lada</option>
+                <option>Lamborghini</option><option>Lancia</option><option>Land Rover</option>
+                <option>Lexus</option><option>Lincoln</option><option>Lotus</option>
+                <option>Maserati</option><option>Mazda</option><option>McLaren</option>
+                <option>Mercedes-AMG</option><option>Mercedes-Benz</option><option>MG</option>
+                <option>Mini</option><option>Mitsubishi</option><option>Morgan</option>
+                <option>Nissan</option><option>Oldsmobile</option><option>Opel</option>
+                <option>Pagani</option><option>Peugeot</option><option>Plymouth</option>
+                <option>Pontiac</option><option>Porsche</option><option>RAM</option>
+                <option>Renault</option><option>Rivian</option><option>Rolls-Royce</option>
+                <option>Saab</option><option>SEAT</option><option>Shelby</option>
+                <option>Škoda</option><option>Smart</option><option>Subaru</option>
+                <option>Suzuki</option><option>Tesla</option><option>Toyota</option>
+                <option>Triumph</option><option>TVR</option><option>Vauxhall</option>
+                <option>Volkswagen</option><option>Volvo</option><option>AMC</option>
+                <option value="other">Other (not in list)</option>
+              </select>
+              <div class="fh">Can't find your brand? Select "Other" — it'll be reviewed for addition to our list.</div>
+            </div>
+            <div class="field">
+              <div class="fl">Model <span class="opt">OPTIONAL</span></div>
+              <input class="fi" type="text" placeholder="e.g. 300 SEL 6.8 AMG, 959, M3 E30">
+              <div class="fh">Not all cards show the model — leave blank if unsure.</div>
+            </div>
+          </div>
+
+          <!-- Other brand field -->
+          <div class="field hidden" id="other-brand-field">
+            <div class="fl">Specify Brand <span class="req">*</span></div>
+            <input class="fi" type="text" placeholder="Type the brand name…" oninput="checkOtherBrandInput(this)">
+            <div class="pending-notice" id="brand-pending">
+              ℹ️ This brand will be submitted for review. Once approved by HotTrack, it will appear in the official brand filter for all users.
+            </div>
+            <div class="fh">It will be saved on your listing immediately. It appears in filters after our team approves it.</div>
+          </div>
+
+          <!-- Collector Number — right after Brand & Model -->
+          <div class="frow frow2">
+            <div class="field">
+              <div class="fl">Collector Number <span class="opt">OPTIONAL</span></div>
+              <input class="fi" type="text" placeholder="e.g. GRJ73 or JBY87-JA10" maxlength="12"
+                oninput="this.value=this.value.toUpperCase()"
+                style="font-family:'DM Mono',monospace;letter-spacing:2px">
+              <div class="fh">Found on the back of the card. 3 letters + 2 digits, sometimes with a suffix.</div>
+            </div>
+            <div class="field">
+              <div class="fl">Real Car Year <span class="opt">OPTIONAL</span></div>
+              <input class="fi" type="number" placeholder="e.g. 1986" min="1900" max="2025"
+                style="font-family:'DM Mono',monospace;letter-spacing:1px">
+              <div class="fh">The year the real car was made — shown on some packages e.g. "Porsche 959 (1986)".</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="fl">Real Car Era <span class="req">*</span></div>
+            <div class="tier-grid">
+              <div class="tier-opt" onclick="selectEra(this)"><div class="t-ico">🏛️</div><div class="t-name">Classic</div><div class="t-desc">Pre-1980</div></div>
+              <div class="tier-opt" onclick="selectEra(this)"><div class="t-ico">📼</div><div class="t-name">80s</div><div class="t-desc">1980–1989</div></div>
+              <div class="tier-opt" onclick="selectEra(this)"><div class="t-ico">💿</div><div class="t-name">90s</div><div class="t-desc">1990–1999</div></div>
+              <div class="tier-opt" onclick="selectEra(this)"><div class="t-ico">📱</div><div class="t-name">2000s</div><div class="t-desc">2000–2009</div></div>
+              <div class="tier-opt" onclick="selectEra(this)"><div class="t-ico">⚡</div><div class="t-name">Modern</div><div class="t-desc">2010–now</div></div>
+              <div class="tier-opt" onclick="selectEra(this)"><div class="t-ico">❓</div><div class="t-name">Unknown</div><div class="t-desc">Not sure</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fantasy fields -->
+        <div id="fantasy-fields" class="hidden">
+          <div class="field">
+            <div class="fl">Fantasy Car Name <span class="req">*</span></div>
+            <input class="fi" type="text" placeholder="e.g. Bone Shaker, Twin Mill, Deora III…">
+          </div>
+          <div class="field">
+            <div class="fl">Brand</div>
+            <input class="fi" value="Hot Wheels Original" disabled style="opacity:0.4;cursor:not-allowed">
+          </div>
+        </div>
+
+        <!-- Custom fields -->
+        <div id="custom-fields" class="hidden">
+          <div class="frow frow2">
+            <div class="field">
+              <div class="fl">Base Car Brand <span class="req">*</span></div>
+              <select class="fsel">
+                <option value="">Select brand…</option>
+                <option>BMW</option><option>Ferrari</option><option>Ford</option>
+                <option>Lamborghini</option><option>Mercedes-Benz</option><option>Porsche</option>
+                <option>Toyota</option><option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="fl">Base Car Model <span class="opt">OPTIONAL</span></div>
+              <input class="fi" type="text" placeholder="e.g. M3 E30, 959…">
+            </div>
+          </div>
+          <div class="field">
+            <div class="fl">Customisation Type <span class="req">*</span></div>
+            <select class="fsel">
+              <option value="">Select type…</option>
+              <option>Repaint</option>
+              <option>Custom Livery</option>
+              <option>Parts Swap</option>
+              <option>Full Custom</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="fl">Customiser Name / Handle <span class="opt">OPTIONAL</span></div>
+            <input class="fi" type="text" placeholder="e.g. @mikekustomz">
+          </div>
+          <div class="field">
+            <div class="fl">Description of Work <span class="req">*</span></div>
+            <textarea class="fta" placeholder="Describe what was done — paint, wheels, interior, body mods…"></textarea>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 2: Classification -->
+    <div class="fsec">
+      <div class="fsec-head">
+        <div class="fsec-ico">🏷️</div>
+        <div>
+          <div class="fsec-title">Hot Wheels Classification</div>
+          <div class="fsec-sub">Tier, series and collector details</div>
+        </div>
+      </div>
+      <div class="fsec-body">
+
+        <div class="field">
+          <div class="fl">Tier <span class="req">*</span></div>
+          <div class="fh" style="margin-bottom:8px">Blue card = Mainline. Silver logo = Silver Series. Black card with Real Riders = Premium. Flame logo = Treasure Hunt.</div>
+          <div class="tier-grid">
+            <div class="tier-opt" onclick="selectTier(this,'mainline')"><div class="t-ico">🔵</div><div class="t-name">Mainline</div><div class="t-desc">Blue card</div></div>
+            <div class="tier-opt" onclick="selectTier(this,'silver')"><div class="t-ico">⚪</div><div class="t-name">Silver Series</div><div class="t-desc">Silver logo</div></div>
+            <div class="tier-opt" onclick="selectTier(this,'premium')"><div class="t-ico">⭐</div><div class="t-name">Premium</div><div class="t-desc">Real Riders</div></div>
+            <div class="tier-opt" onclick="selectTier(this,'th')"><div class="t-ico">🔥</div><div class="t-name">Treasure Hunt</div><div class="t-desc">TH flame</div></div>
+            <div class="tier-opt" onclick="selectTier(this,'sth')"><div class="t-ico">💎</div><div class="t-name">Super TH</div><div class="t-desc">Spectraflame</div></div>
+            <div class="tier-opt" onclick="selectTier(this,'rlc')"><div class="t-ico">🔴</div><div class="t-name">RLC</div><div class="t-desc">Members only</div></div>
+          </div>
+          <div class="fh" style="margin-top:8px">Can't find your tier? Add it in the description field below — we'll review it for addition.</div>
+        </div>
+
+        <div class="field" id="series-field">
+          <div class="fl">Series <span class="opt">OPTIONAL</span></div>
+          <select class="fsel" id="series-sel" onchange="updateSubseries()">
+            <option value="">Select tier first…</option>
+          </select>
+          <div class="fh">The series name on the card. On Premium cards found in the top right corner.</div>
+          <div class="pending-notice" id="series-pending"></div>
+        </div>
+
+        <div class="field hidden" id="subseries-field">
+          <div class="fl">Sub-series <span class="opt">OPTIONAL</span></div>
+          <select class="fsel" id="subseries-sel">
+            <option value="">Select series first…</option>
+          </select>
+          <div class="fh">Specific theme within the series e.g. Deutschland Design. Select "Other" if not listed — it'll be reviewed for addition.</div>
+          <div class="pending-notice" id="subseries-pending"></div>
+        </div>
+
+        <div class="frow frow2">
+          <div class="field">
+            <div class="fl">Assortment Code <span class="opt">OPTIONAL</span></div>
+            <input class="fi" type="text" placeholder="e.g. FPY86" maxlength="8"
+              oninput="this.value=this.value.toUpperCase()"
+              style="font-family:'DM Mono',monospace;letter-spacing:2px">
+            <div class="fh">On the hang tag hole on front, repeated on back as "Asst."</div>
+          </div>
+          <div class="field">
+            <div class="fl">Release Year <span class="opt">OPTIONAL</span></div>
+            <select class="fsel">
+              <option value="">Select year…</option>
+              <option>2025</option><option>2024</option><option>2023</option>
+              <option>2022</option><option>2021</option><option>2020</option>
+              <option>2019</option><option>2018</option><option>2017</option>
+              <option>2016</option><option>2015</option><option>2014</option>
+              <option>2013</option><option>2012</option><option>2010</option>
+              <option>Pre-2010</option>
+            </select>
+            <div class="fh">Series year if shown e.g. "Factory Fresh 2021", otherwise © year from back.</div>
+          </div>
+        </div>
+
+        <div class="field" style="max-width:160px">
+          <div class="fl">Wave <span class="opt">OPTIONAL</span></div>
+          <select class="fsel">
+            <option value="">Unknown</option>
+            <option>A</option><option>B</option><option>C</option><option>D</option>
+            <option>E</option><option>F</option><option>G</option><option>H</option>
+          </select>
+          <div class="fh">Letter after year code on back e.g. 21A = Wave A</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 3: Physical -->
+    <div class="fsec">
+      <div class="fsec-head">
+        <div class="fsec-ico">🎨</div>
+        <div>
+          <div class="fsec-title">Physical Details</div>
+          <div class="fsec-sub">Color, decals and condition</div>
+        </div>
+      </div>
+      <div class="fsec-body">
+        <div class="frow frow2">
+          <div class="field">
+            <div class="fl">Base Color <span class="req">*</span></div>
+            <input class="fi" type="text" placeholder="e.g. Dark Red, Blue Metallic…">
+            <div class="fh">Main body color, not including any decals or livery.</div>
+          </div>
+          <div class="field">
+            <div class="fl">Decals <span class="req">*</span></div>
+            <div class="toggle-row" onclick="this.querySelector('.tog').classList.toggle('on')">
+              <div class="ti">
+                <div class="tl">Has decals / livery</div>
+                <div class="td-sub">Stripes, numbers, logos…</div>
+              </div>
+              <div class="tog"></div>
+            </div>
+            <div class="fh">Any stripes, racing numbers, sponsor logos or livery on the car.</div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="fl">Condition <span class="req">*</span></div>
+          <div class="cond-grid">
+            <div class="cond-opt" onclick="selectCond(this)"><div class="co-ico">🔒</div><div class="co-name">Sealed</div></div>
+            <div class="cond-opt" onclick="selectCond(this)"><div class="co-ico">✨</div><div class="co-name">Mint Opened</div></div>
+            <div class="cond-opt" onclick="selectCond(this)"><div class="co-ico">👍</div><div class="co-name">Good</div></div>
+            <div class="cond-opt" onclick="selectCond(this)"><div class="co-ico">🎮</div><div class="co-name">Played</div></div>
+          </div>
+          <div class="fh">Sealed = packaging never opened. Played = visible wear or marks.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: Listing -->
+    <div class="fsec">
+      <div class="fsec-head">
+        <div class="fsec-ico">💰</div>
+        <div>
+          <div class="fsec-title">Listing Details</div>
+          <div class="fsec-sub">Photos, price and options</div>
+        </div>
+      </div>
+      <div class="fsec-body">
+
+        <div class="field">
+          <div class="fl">Photos <span class="req">*</span></div>
+          <div class="photo-zone" onclick="showToast('📸 Photo upload ready in the real version!')">
+            <div class="pz-ico">📷</div>
+            <div class="pz-title">Tap to add photos</div>
+            <div class="pz-hint">Up to 8 photos · JPG or PNG · Max 10MB each</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="fl">Your Price (€) <span class="req">*</span></div>
+          <input class="fi" type="number" placeholder="0.00" id="price-inp" oninput="updatePrice()"
+            style="font-family:'Bebas Neue';font-size:22px;letter-spacing:1px;max-width:180px">
+          <div class="fh">You set the price. You receive 100% of this amount. Buyer pays a small protection fee on top.</div>
+        </div>
+
+        <div class="field">
+          <div class="toggle-row" onclick="this.querySelector('.tog').classList.toggle('on')">
+            <div class="ti">
+              <div class="tl">Accept offers from buyers</div>
+              <div class="td-sub">Buyers can propose a price — you accept or decline</div>
+            </div>
+            <div class="tog"></div>
+          </div>
+        </div>
+
+        <div class="price-prev">
+          <div class="pp-head">💡 What the buyer pays</div>
+          <div class="pp-rows">
+            <div class="pp-row"><span>Your listed price</span><span class="pp-amt" id="pp-price">€0.00</span></div>
+            <div class="pp-row"><span>Buyer protection fee</span><span class="pp-amt" id="pp-fee">€0.00</span></div>
+            <div class="pp-row total"><span>Total buyer pays</span><span class="pp-amt big" id="pp-total">€0.00</span></div>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:16px">
+          <div class="fl">Promoted Listing <span class="opt">OPTIONAL</span></div>
+          <div class="promo-box">
+            <div class="promo-head">⭐ Get More Eyes On Your Listing</div>
+            <div class="promo-desc">Featured listings appear at the top of browse results and on the homepage before anyone even searches. Perfect for rare or high-value cars.</div>
+            <div class="promo-opts">
+              <div class="promo-opt" onclick="selectPromo(this)">
+                <div class="promo-days">3 Days</div>
+                <div class="promo-price">€0.99</div>
+              </div>
+              <div class="promo-opt" onclick="selectPromo(this)">
+                <div class="promo-days">7 Days</div>
+                <div class="promo-price">€1.99</div>
+              </div>
+              <div class="promo-opt" onclick="selectPromo(this)">
+                <div class="promo-days">14 Days</div>
+                <div class="promo-price">€3.49</div>
+              </div>
+            </div>
+            <div class="promo-none" onclick="showToast('No promotion selected — listing is still free!')">No thanks, list without promotion</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="fl">Description <span class="opt">OPTIONAL</span></div>
+          <textarea class="fta" placeholder="Any extra details — where you bought it, special notes, defects to disclose…"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="submit-area">
+      <div class="submit-note">
+        <strong>Ready to publish?</strong><br>
+        Your listing goes live instantly. Edit or remove it anytime from your profile. You receive 100% of your listed price.
+      </div>
+      <button class="btn-submit" onclick="showToast('🎉 Listing published! Buyers can now find your car.')">Publish Listing →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     FEES SCREEN
+═══════════════════════════════════════ -->
+<div id="screen-fees" class="screen">
+  <div class="fees-wrap">
+    <button class="back-btn" onclick="showScreen('browse')">← Back</button>
+    <div class="sell-eyebrow">Transparent Pricing</div>
+    <div class="sell-title">How <em>Fees</em> Work</div>
+    <div class="sell-sub">HotTrack is completely free for sellers. Buyers pay a small protection fee on top of the listed price, covering secure payments, dispute resolution and customer support.</div>
+
+    <div style="background:var(--green-pale);border:1px solid rgba(22,163,74,0.2);border-radius:12px;padding:16px 18px;margin-bottom:22px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);margin-bottom:5px">✓ Sellers always receive 100%</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6">You list a car for €25. A buyer purchases it. You receive exactly €25 — no deductions, no surprises. The buyer pays the protection fee separately on top.</div>
+    </div>
+
+    <div class="fee-table-wrap">
+      <div class="fee-table-head">Buyer Protection Fee — by Sale Price</div>
+      <table class="fee-table">
+        <tr><td>€0 – €9.99</td><td>€1.00</td></tr>
+        <tr><td>€10 – €14.99</td><td>€1.50</td></tr>
+        <tr><td>€15 – €19.99</td><td>€1.80</td></tr>
+        <tr class="hi"><td>€20 – €29.99</td><td>€2.50</td></tr>
+        <tr class="hi"><td>€30 – €39.99</td><td>€3.50</td></tr>
+        <tr class="hi"><td>€40 – €49.99</td><td>€4.00</td></tr>
+        <tr class="hi"><td>€50 – €59.99</td><td>€5.00</td></tr>
+        <tr><td>€60 – €69.99</td><td>€6.00</td></tr>
+        <tr><td>€70 – €79.99</td><td>€7.00</td></tr>
+        <tr><td>€80 – €99.99</td><td>€7.50</td></tr>
+        <tr><td>€100 – €149.99</td><td>€9.00</td></tr>
+        <tr><td>€150 – €199.99</td><td>€10.00</td></tr>
+        <tr><td>€200 – €249.99</td><td>€12.00</td></tr>
+        <tr><td>€250 – €299.99</td><td>€12.50</td></tr>
+        <tr><td>€300 – €499.99</td><td>€15.00</td></tr>
+        <tr><td>€500 – €749.99</td><td>€20.00</td></tr>
+        <tr><td>€750 – €899.99</td><td>€25.00</td></tr>
+        <tr><td>€900 – €999.99</td><td>€35.00</td></tr>
+        <tr><td>€1,000+</td><td>€50.00 (max)</td></tr>
+      </table>
+    </div>
+
+    <div class="calc-box">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Fee Calculator</div>
+      <input class="fi" type="number" placeholder="Enter listing price…" id="fee-calc" oninput="calcFee()" style="max-width:200px">
+      <div class="calc-result" id="calc-result"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toast-msg"></span></div>
+
+<script>
+// ── DATA ──
+const brands = [
+  'Acura','Alfa Romeo','Alpine','Aston Martin','Audi','Austin','Bentley','BMW',
+  'Bugatti','Buick','BYD','Cadillac','Chevrolet','Chrysler','Citroën','Cupra',
+  'Dacia','Datsun','De Tomaso','Dodge','Ferrari','Fiat','Ford','Genesis',
+  'Honda','Hummer','Hyundai','Infiniti','Isuzu','Jaguar','Jeep','Kia','Lada',
+  'Lamborghini','Lancia','Land Rover','Lexus','Lincoln','Lotus','Maserati',
+  'Mazda','McLaren','Mercedes-AMG','Mercedes-Benz','MG','Mini','Mitsubishi',
+  'Morgan','Nissan','Oldsmobile','Opel','Pagani','Peugeot','Plymouth',
+  'Pontiac','Porsche','RAM','Renault','Rivian','Rolls-Royce','Saab','SEAT',
+  'Shelby','Škoda','Smart','Subaru','Suzuki','Tesla','Toyota','Triumph',
+  'TVR','Vauxhall','Volkswagen','Volvo','AMC','Hot Wheels Original'
+];
+
+const seriesData = {
+  mainline:['Factory Fresh','Fast & Furious','HW Speed Graphics','HW J-Imports','HW Exotics','HW Metro','HW Dream Garage','HW Screen Time','HW Art Cars','HW EV','HW Rescue','HW Dirt','Batman','Pop Culture','Other (not in list)'],
+  silver:['Hot Wagons','Vintage Racing Club','Automotive Celebrations','National Icons','Neon Speeders','Fast & Furious','Themed Entertainment','Other (not in list)'],
+  premium:['Car Culture','Boulevard','Pop Culture','Team Transport','Other (not in list)'],
+  th:[],sth:[],rlc:[]
+};
+
+const subseriesData = {
+  'Car Culture':['Deutschland Design','Japan Historics','Race Day','Spettacolare','Slide Street','Exotic Envy','World Tour','Terra Trek','Modern Classics','Air Cooled','Cars & Donuts',"Jay Leno's Garage",'British Horse Power','Door Slammers','Fast Wagons','Fast & Furious','Euro Style','Track Day','Thrill Climbers','Power Trip','Aerostyles','Vintage Racing','Circuit Legends','HW Redliners','Other (not in list)'],
+  'Fast & Furious':['HW Decades of Fast','Fast Imports','Fast Superstars','Furious Fleet','Quick Shifters','Other (not in list)'],
+  'HW Speed Graphics':['iWC Racing','Other (not in list)']
+};
+
+const fees=[
+  [0,9.99,1],[10,14.99,1.5],[15,19.99,1.8],[20,29.99,2.5],
+  [30,39.99,3.5],[40,49.99,4],[50,59.99,5],[60,69.99,6],
+  [70,79.99,7],[80,99.99,7.5],[100,149.99,9],[150,199.99,10],
+  [200,249.99,12],[250,299.99,12.5],[300,499.99,15],[500,749.99,20],
+  [750,899.99,25],[900,999.99,35],[1000,Infinity,50]
+];
+
+function getFee(p){const b=fees.find(f=>p>=f[0]&&p<=f[1]);return b?b[2]:0;}
+
+// ── THEME ──
+function toggleTheme(){
+  const html=document.documentElement;
+  const isDark=html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme',isDark?'light':'dark');
+  document.getElementById('theme-label').textContent=isDark?'☀️ Light':'🌙 Dark';
+}
+
+// ── SCREENS ──
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.querySelectorAll('.npill').forEach(p=>p.classList.remove('active','active-custom'));
+  const map={browse:'np-browse',sell:'np-browse',detail:'np-browse',fees:'np-fees'};
+  if(map[name])document.getElementById(map[name])?.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showDetail(){showScreen('detail');}
+
+function showCustoms(){
+  showScreen('browse');
+  setTimeout(()=>switchBrowse('customs'),100);
+  document.getElementById('np-custom')?.classList.add('active-custom');
+}
+
+function switchBrowse(tab){
+  document.getElementById('bt-cars').classList.toggle('active',tab==='cars');
+  document.getElementById('bt-customs').classList.toggle('active',tab==='customs');
+}
+
+// ── BRANDS SIDEBAR ──
+const selBrands=new Set();
+function buildBrands(filter=''){
+  const list=document.getElementById('brand-list');
+  if(!list)return;
+  list.innerHTML='';
+  brands.filter(b=>b.toLowerCase().includes(filter.toLowerCase())).forEach(b=>{
+    const el=document.createElement('div');
+    el.className='brand-item'+(selBrands.has(b)?' sel':'');
+    el.innerHTML=`<div class="bchk">${selBrands.has(b)?'✓':''}</div>${b}`;
+    el.onclick=()=>{
+      selBrands.has(b)?selBrands.delete(b):selBrands.add(b);
+      buildBrands(filter);updateActiveTags();
+    };
+    list.appendChild(el);
+  });
+}
+function filterBrands(v){buildBrands(v);}
+function clearBrands(){selBrands.clear();buildBrands();updateActiveTags();}
+function clearModelFilter(){const el=document.getElementById('model-filter');if(el)el.value='';updateActiveTags();}
+
+// ── CHIPS ──
+const activeChips={};
+function toggleChip(el,group){
+  el.classList.toggle('on');
+  if(!activeChips[group])activeChips[group]=new Set();
+  const label=el.textContent.trim();
+  el.classList.contains('on')?activeChips[group].add(label):activeChips[group].delete(label);
+  updateActiveTags();
+}
+function clearGroup(group){
+  const grp=document.getElementById('grp-'+group);
+  if(grp)grp.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  if(activeChips[group])activeChips[group].clear();
+  updateActiveTags();
+}
+
+function updateActiveTags(){
+  const bar=document.getElementById('active-tags');
+  if(!bar)return;
+  bar.innerHTML='';
+  let any=false;
+  Object.entries(activeChips).forEach(([group,set])=>{
+    set.forEach(label=>{
+      any=true;
+      const tag=document.createElement('div');
+      tag.className='atag';
+      tag.innerHTML=`${label} ×`;
+      tag.onclick=()=>{
+        set.delete(label);
+        const grp=document.getElementById('grp-'+group);
+        if(grp)grp.querySelectorAll('.chip').forEach(c=>{if(c.textContent.trim()===label)c.classList.remove('on');});
+        updateActiveTags();
+      };
+      bar.appendChild(tag);
+    });
+  });
+  selBrands.forEach(b=>{
+    any=true;
+    const tag=document.createElement('div');
+    tag.className='atag';
+    tag.innerHTML=`${b} ×`;
+    tag.onclick=()=>{selBrands.delete(b);buildBrands();updateActiveTags();};
+    bar.appendChild(tag);
+  });
+  // Model filter tag
+  const mf=document.getElementById('model-filter');
+  if(mf&&mf.value.trim()){
+    any=true;
+    const tag=document.createElement('div');
+    tag.className='atag';
+    tag.innerHTML=`Model: ${mf.value.trim()} ×`;
+    tag.onclick=()=>{mf.value='';updateActiveTags();};
+    bar.appendChild(tag);
+  }
+  if(any){
+    const clr=document.createElement('button');
+    clr.className='clr-all';clr.textContent='Clear all';
+    clr.onclick=()=>{
+      Object.keys(activeChips).forEach(g=>{
+        if(activeChips[g])activeChips[g].clear();
+        const grp=document.getElementById('grp-'+g);
+        if(grp)grp.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+      });
+      selBrands.clear();buildBrands();
+      if(mf)mf.value='';
+      updateActiveTags();
+    };
+    bar.appendChild(clr);
+  }
+}
+
+// ── WISHLIST ──
+function toggleWish(btn){
+  btn.classList.toggle('on');
+  btn.textContent=btn.classList.contains('on')?'♥':'♡';
+}
+
+// ── SELL FORM ──
+function selectType(type){
+  ['real','fantasy','custom'].forEach(t=>{
+    document.getElementById('t-'+t)?.classList.toggle('sel',t===type);
+    const f=document.getElementById(t+'-fields');
+    if(f)f.classList.toggle('hidden',t!==type);
+  });
+}
+
+function selectEra(el){
+  el.closest('.tier-grid').querySelectorAll('.tier-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+let currentTier='';
+function selectTier(el,tier){
+  el.closest('.tier-grid').querySelectorAll('.tier-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');currentTier=tier;
+  updateSeriesField();
+}
+
+function updateSeriesField(){
+  const sel=document.getElementById('series-sel');
+  if(!sel)return;
+  const opts=seriesData[currentTier]||[];
+  sel.innerHTML=opts.length?'<option value="">Select series…</option>':'<option value="">No series for this tier</option>';
+  opts.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
+  sel.disabled=opts.length===0;
+  document.getElementById('subseries-field')?.classList.add('hidden');
+  const ss=document.getElementById('subseries-sel');
+  if(ss)ss.innerHTML='<option value="">Select series first…</option>';
+}
+
+function updateSubseries(){
+  const series=document.getElementById('series-sel')?.value;
+  const subField=document.getElementById('subseries-field');
+  const subSel=document.getElementById('subseries-sel');
+  const pending=document.getElementById('series-pending');
+  if(series==='Other (not in list)'&&pending){
+    pending.textContent='ℹ️ This series will be submitted for review. Once approved by HotTrack, it will appear in filters for all users.';
+    pending.classList.add('show');
+  } else if(pending){pending.classList.remove('show');}
+  const subs=subseriesData[series];
+  if(subs&&subs.length>0){
+    subField?.classList.remove('hidden');
+    subSel.innerHTML='<option value="">Select sub-series…</option>';
+    subs.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;subSel.appendChild(o);});
+    subSel.onchange=checkSubseriesOther;
+  } else {
+    subField?.classList.add('hidden');
+  }
+}
+
+function checkSubseriesOther(){
+  const val=document.getElementById('subseries-sel')?.value;
+  const pending=document.getElementById('subseries-pending');
+  if(val==='Other (not in list)'&&pending){
+    pending.textContent='ℹ️ This sub-series will be submitted for review. Once approved by HotTrack, it will appear in filters for all users.';
+    pending.classList.add('show');
+  } else if(pending){pending.classList.remove('show');}
+}
+
+function checkOtherBrand(){
+  const val=document.getElementById('brand-sel')?.value;
+  const field=document.getElementById('other-brand-field');
+  field?.classList.toggle('hidden',val!=='other');
+}
+
+function checkOtherBrandInput(inp){
+  const pending=document.getElementById('brand-pending');
+  if(inp.value.trim().length>1&&pending){
+    pending.classList.add('show');
+  } else if(pending){pending.classList.remove('show');}
+}
+
+function selectCond(el){
+  el.closest('.cond-grid').querySelectorAll('.cond-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function updatePrice(){
+  const price=parseFloat(document.getElementById('price-inp')?.value)||0;
+  const fee=getFee(price);
+  const total=price+fee;
+  const fmt=n=>'€'+n.toFixed(2);
+  document.getElementById('pp-price').textContent=fmt(price);
+  document.getElementById('pp-fee').textContent=fmt(fee);
+  document.getElementById('pp-total').textContent=fmt(total);
+}
+
+function selectPromo(el){
+  el.closest('.promo-opts').querySelectorAll('.promo-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  showToast('⭐ Promotion selected! Charged when you publish.');
+}
+
+// ── DETAIL TABS ──
+function switchDtab(el,tab){
+  document.querySelectorAll('.dtab-btn').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('dtab-desc')?.classList.toggle('hidden',tab!=='desc');
+  document.getElementById('dtab-specs')?.classList.toggle('hidden',tab!=='specs');
+}
+
+function toggleOfferBox(){
+  document.getElementById('offer-box')?.classList.toggle('show');
+}
+
+// ── FEE CALC ──
+function calcFee(){
+  const price=parseFloat(document.getElementById('fee-calc')?.value)||0;
+  const fee=getFee(price);
+  const result=document.getElementById('calc-result');
+  if(!result)return;
+  if(price<=0){result.innerHTML='';return;}
+  result.innerHTML=`
+    Listed price: <span>€${price.toFixed(2)}</span><br>
+    Buyer protection fee: <span>€${fee.toFixed(2)}</span><br>
+    Total buyer pays: <span class="big">€${(price+fee).toFixed(2)}</span><br>
+    Seller receives: <span style="color:var(--green)">€${price.toFixed(2)}</span>
+  `;
+}
+
+// ── TOAST ──
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── INIT ──
+buildBrands();
+updateSeriesField();
+</script>
+</body>
+</html>
